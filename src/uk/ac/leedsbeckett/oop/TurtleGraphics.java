@@ -23,10 +23,13 @@ import javax.swing.JPanel;
  * Don't forget to look at the inherited methods from JPanel and above, which will also be if use.
  * 
  * @author Duncan Mullier
- * @version 1.0 
+ * @version 1.5 Mar 2020
  * All software has bugs, if you find one please report to author. Ensure you have the latest version
- * 
- * 
+ * V1.3 adds setPanelSize() to resize the turtle area
+ * V1.4 adds getBufferedImage()
+ * *V1.5 adds setBufferdImage()
+ * V1.6 adds reset() to make resetting the turtle very, very easy.
+ * V1.7 adds turnLeft/Right and Forward which take a number held in a string.
  *<h2> example code </h2>
  * <pre>
 package whateverMyPackageIs;
@@ -60,12 +63,13 @@ public class TurtleGraphics extends JPanel
 	/**
 	 * The default BG colour of the image.
 	 */
-	private final float VERSION = 1.0f; //jar not yet generated V1.2 fixes clear() not working
+	private final float VERSION = 1.6f; //jar not yet generated V1.2 fixes clear() not working
 	private  Color background_Col = Color.DARK_GRAY;
 	private final static int TURTLE_X_SIZE = 72, TURTLE_Y_SIZE = 69;
-	private final int panelWidth = 800;
-	private final int panelHeight = 400;
-	private int sleepPeriod=250;
+	private final int TURTLESTARTX = 800, TURTLESTARTY = 400;
+	private  int panelWidth = TURTLESTARTX;
+	private  int panelHeight = TURTLESTARTY;
+	
 	private JFrame hostFrame = null;
 	/**
 	 * The underlying image used for drawing. This is required so any previous drawing activity is persistent on the panel.
@@ -74,13 +78,92 @@ public class TurtleGraphics extends JPanel
 	private BufferedImage image, turtleDisplay, turtle0, turtle90, turtle180, turtle270;
 	
 	/**
-	 * properties for the pen/turtle position, pen colour and direction the turtle is pointing
+	 * Colour of the pen the turtle draws with (A Java Color)
 	 */
-	private Color PenColour = Color.RED;
-	private boolean penDown = false;
-	private int xPos=100, yPos=100;
-	private int direction = 180; //robot pointing down the screen;
+	protected Color PenColour = Color.RED;
+	
+	/**
+	 * a moving turtle will draw if this is true and not if it is false (set by penDown and PenUp methods)
+	 */
+	protected boolean penDown = false;
+	
+	/**
+	 * x position of the turtle on the screen
+	 */
+	protected int xPos=100;
+	
+	/**
+	 * y position of the turtle on the screen
+	 */
+	protected int yPos=100;
+	
+	/**
+	 * direction the turtle is pointing in in degrees
+	 */
+	protected int direction = 180; //robot pointing down the screen;
+	
+	/**
+	 * delay for turtle animation
+	 */
+	protected int sleepPeriod=10; //delay for turtle animation
 
+	//takes a string, splits it and tried to convert it into integers
+	//if it can't it throws a numberformatexception
+	private int[] getParameters(String args) 
+	{
+		String[] split = args.split(" ");
+		int[] params = new int[split.length];
+		for (int i=0; i<split.length; i++)
+		{
+			try
+			{
+				params[i] = Integer.parseInt(split[i]);
+			}
+			catch(NumberFormatException e)
+			{
+				throw new NumberFormatException("***TurtleGraphics Exception*** cannot convert parameter "+(i+1)+" (\""+split[i]+ "\") to an integer");				
+			}
+		}
+		return params;
+	}
+	
+	
+	/**
+	 * returns the graphicsContext of the Turtle display so you can drw on it using the normal Java drawing methods
+	 * @return graphics context
+	 */
+	public Graphics getGraphicsConext()
+	{
+		return  image.getGraphics();
+	}
+	
+	/**
+	 * returns the graphicsContext (same as above but spelt correctly) of the Turtle display so you can drw on it using the normal Java drawing methods
+	 * @return graphics context
+	 */
+	public Graphics getGraphicsContext()
+	{
+		return  image.getGraphics();
+	}
+	
+	/**
+	 * return a BufferedImage of he display, so that it can be saved
+	 * @return BufferedImage of display
+	 */
+	public BufferedImage getBufferedImage()
+	{
+		return image;
+	}
+	
+	/**
+	 * sets the background image to be the passed in BufferedImage
+	 * @param newImage saved BufferedImage
+	 */
+	public void setBufferedImage(BufferedImage newImage)
+	{
+		image = newImage;
+		repaint();
+	}
 		/**
 	 * Draw a line on the image using the given colour bypassing the turtle system
 	 * 
@@ -91,7 +174,42 @@ public class TurtleGraphics extends JPanel
 	 * @param y2 y coordinate of end of line
 	 */
 	
+	/**
+	 * getPenColour returns the colour that the turtle draws in
+	 * @return Color pencolour
+	 */
+	public Color getPenColour()
+	{
+		return PenColour;
+	}
 	
+	//public void setPenalSize()
+	/**
+	 * setPenColour sets the colour that the turtle will draw in
+	 * @param col Java Color
+	 */
+	public void setPenColour(Color col)
+	{
+		PenColour = col;
+	}
+	
+	/**
+	 * getDirection gets the direction the turtle is pointing in.
+	 * @return direction in degrees
+	 */
+	public int getDirection()
+	{
+		return direction;
+	}
+	
+	/**
+	 * draws a line directly on the panel without affecting the turtle
+	 * @param color colour to draw in 
+	 * @param x1 xpos of start of line
+	 * @param y1 ypos of start of line
+	 * @param x2 xpos of end of line
+	 * @param y2 ypos of end of line
+	 */
 	public void drawLine(Color color, int x1, int y1, int x2, int y2) 
 	{
 		
@@ -109,7 +227,7 @@ public class TurtleGraphics extends JPanel
 			return background_Col;
 		}
 
-		/** gets the background colour used by clear() to fill the panel.
+		/** sets the background colour used by clear() to fill the panel.
 		 * @param background_Col the background_Col to set (used when clear() is called.).
 		 */
 		public void setBackground_Col(Color background_Col)
@@ -146,7 +264,7 @@ public class TurtleGraphics extends JPanel
 		}
 
 	/**
-	 * draws a simple graphic on the canvas
+	 * draws a simple graphic on the canvas and reports the version number of this class
 	 */
 	public void about()
 	{
@@ -156,7 +274,8 @@ public class TurtleGraphics extends JPanel
 			{
 				int dx = 50;
 				Graphics g = image.getGraphics();
-				
+				Color savePen = PenColour; //save drawing pen
+				boolean savePendown = penDown;
 				penDown();
 				for(int i=0; i<10; i++)
 				{
@@ -166,6 +285,20 @@ public class TurtleGraphics extends JPanel
 					turnRight();
 					forward(50+(i*2));
 					turnRight();
+					forward(50+(i*2));
+					forward(50+(i*2));
+					turnRight(45);
+					forward(50+(i*2));
+					turnRight(45);
+					forward(50+(i*2));
+					turnRight(45);
+					forward(50+(i*2));
+					forward(50+(i*2));
+					turnRight(45);
+					forward(50+(i*2));
+					turnRight(45);
+					forward(50+(i*2));
+					turnRight(45);
 					forward(50+(i*2));
 					penUp();
 					forward(5);
@@ -184,8 +317,12 @@ public class TurtleGraphics extends JPanel
 				PenColour = Color.GREEN;
 				
 				g.drawString("TurtleGraphics Version "+VERSION,250,250);
-				//g.drawLine(25, 25, 200, 200);
 				penUp();
+				forward(100);
+				for(int i = 0; i<360; i++)
+					turnRight(10);
+				penDown = savePendown;
+				PenColour = savePen; //restore pen
 				repaint();
 			   
 			}
@@ -202,6 +339,7 @@ public class TurtleGraphics extends JPanel
 	{
 		this.sleepPeriod = speed;
 	}
+	
 	/**
 	 * puts pen down so a line will be drawn when the turtle is moved
 	 */
@@ -218,6 +356,18 @@ public class TurtleGraphics extends JPanel
 		penDown = false;
 	}
 	
+		/**
+		 * turtle is rotated to the right by <amount> degrees. 
+		 * @param amount is a String
+		 * if param cannot be converted to an integer a NumberFormatException is thrown.
+		 */
+		public void turnRight(String amount)
+		{
+			int degrees = getParameters(amount)[0];
+			turnRight(degrees);
+		}
+
+		
 	/**
 	 * turtle is rotated 90 degrees to the right. i.e. if it is facing upwards (north) before it will facing right (east) after  	
 	 * 
@@ -231,9 +381,9 @@ public class TurtleGraphics extends JPanel
 	}
 	
 	/**
-	 * turtle is rotated 90 degrees to the right by <amount> degrees. i.e. it will rotate right by <amount> degrees  	
+	 * turtle is rotated 90 degrees to the right by amount degrees. i.e. it will rotate right by amount degrees  	
 	 * The turtle will wrap around if it goes beyond 360
-	 * @param degrees to rotate
+	 * @param amount degrees to rotate
 	 */
 	public void turnRight(int amount)
 	{
@@ -243,6 +393,20 @@ public class TurtleGraphics extends JPanel
 		repaint();
 		
 	}
+	
+	/**
+	 * turtle is rotated to the right by <amount> degrees. 
+	 * @param amount is a String
+	 * if param cannot be converted to an integer a NumberFormatException is thrown.
+	 */
+	public void turnLeft(String amount)
+	{
+		int degrees = getParameters(amount)[0];
+		turnLeft(degrees);
+	}
+	
+
+	
 	/**
 	 * turtle is rotated 90 degrees to the left. i.e. if it is facing upwards (north) before it will facing left (west) after  	
 	 * 
@@ -256,15 +420,27 @@ public class TurtleGraphics extends JPanel
 	}
 	
 	/**
-	 * turtle is rotated 90 degrees to the right by <amount> degrees. i.e. it will rotate right by <amount> degrees  	
+	 * turtle is rotated 90 degrees to the right by amount degrees. i.e. it will rotate right by amount degrees  	
 	 * The turtle will wrap around if it goes beyond 360
-	 * @param degrees to rotate
+	 * @param amount degrees to rotate
 	 */
 	public void turnLeft(int amount)
 	{
 		direction -= amount%360;
 		repaint();
 	}
+	
+	/**
+	 * turtle is rotated to the right by <amount> degrees. 
+	 * @param amount is a String
+	 * if param cannot be converted to an integer a NumberFormatException is thrown.
+	 */
+	public void forward(String amount)
+	{
+		int amt = getParameters(amount)[0];
+		forward(amt);
+	}
+	
 	
 	/**
 	 * move the turtle (in the direction it is pointing) by {distance} pixels. A line will be drawn if the pen is down, not if it is up
@@ -297,56 +473,7 @@ public class TurtleGraphics extends JPanel
 				System.out.println("exception ****** "+e);
 		} 
 	}
-	/**
-	 * move the turtle (in the direction it is pointing) by {distance} pixels. A line will be drawn if the pen is down, not if it is up
-	 * 
-	 * @param distance in pixels to move
-	 */
-	public void forwardOld(int distance)
-	{
-		//Graphics g = image.getGraphics();
-		int x=xPos,y=yPos;
-		//stored xPos and yPos are current location
-		if (direction == 0) //robot facing up the screen, so forward subtracts y
-		{
-			y = yPos-distance;
-		}
-		else if (direction == 90) //robot facing right so forward add x
-		{
-			x = xPos + distance;
-		}
-		else if (direction == 180) //robot facing down the screen, so forwards adds to y
-		
-		
-		{
-			y = yPos + distance;
-		}
-		else if (direction == 270) //robot facing left, so forwards subtracts from x
-		{
-			x = xPos - distance;
-		}
-		else 
-		{
-			throw new java.lang.IllegalArgumentException("illegle direction."); 
-			
-		}
-		if (penDown)
-		{
-			drawLine(PenColour, xPos, yPos, x, y);
-		}
-		//now robot has moved to the new position
-		xPos = x;
-		yPos = y;
-		
-	
-		try {
-			Thread.sleep(sleepPeriod);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			
-		}
-	}
-	
+
 	/**
 	 * Clears the image contents with the current background colour.
 	 */
@@ -360,7 +487,7 @@ public class TurtleGraphics extends JPanel
 	}
 	
 	/**
-	 * set graphic to be the one in the correct direction the turtle is pointing
+	 * set graphic to be the one in the correct direction the turtle is pointing by rotating the image
 	 */
 	
 	private void setTurtleGraphicDirection()
@@ -380,31 +507,20 @@ public class TurtleGraphics extends JPanel
 		
 		repaint();
 
-		//You can rotate an image using JDeli library in fewer lines of code
-		//final Rotate rotate = new Rotate(90);
-		//BufferedImage rotatedImage = rotate.apply(image);
-		/*
-		switch (direction)
-		{
-			case 0:
-				turtleDisplay = turtle0;
-				break;
-			case 90:
-				turtleDisplay = turtle90;
-				break;
-			case 180:
-				turtleDisplay = turtle180;
-				break;
-			case 270:
-				turtleDisplay = turtle270;
-				break;
-			default:
-				turtleDisplay = turtle0;
-				break;
-				
-		}*/
 		
 	}
+	
+	
+	/**
+	 * unimplemented circle command
+	 * @param radius radius of the circle to draw
+	 */
+	public void circle(int radius)
+	{
+		
+		throw new java.lang.UnsupportedOperationException("unimplemented command"); 
+	}
+	
 //	@Override
 	/**
 	 * overridden paint method to handle image updating (do not call directly, use repaint();)
@@ -420,7 +536,7 @@ public class TurtleGraphics extends JPanel
 
 	public void setPreferredSize(int width, int height)
 	{
-		System.out.println("setting size");
+		//System.out.println("setting size");
 		setPreferredSize(new Dimension(width, height));
 	}
 	
@@ -429,7 +545,7 @@ public class TurtleGraphics extends JPanel
 	 * give full path or store in application directory
 	 * don't make the image too big, have background of the image transparent and it should be pointing right (90 degrees)
 	 * best to make the image have a transparent background(Google it).
-	 * @param filename
+	 * @param filename file or path to save the to
 	 */
 	public void setTurtleImage(String filename)
 	{
@@ -445,10 +561,38 @@ public class TurtleGraphics extends JPanel
 	}
 	
 	/**
+	 * Resize the turtle area, current display will be lost.
+	 * @param xSize width of panel
+	 * @param ySize height of panel
+	 */
+	public void setPanelSize(int xSize, int ySize)
+	{
+		panelHeight = ySize;
+		panelWidth = xSize;
+		image = new BufferedImage(panelWidth, panelHeight, BufferedImage.TYPE_INT_RGB);
+		setPreferredSize(new Dimension(panelWidth, panelHeight));
+		clear();
+	}
+	
+	/**
+	 * reset() moves turtle to initial position
+	 */
+	public void reset()
+	{
+		//System.out.println("xpos,ypos="+panelWidth+","+panelHeight);
+		//System.out.println("xpos,ypos="+xPos+","+yPos);
+		//set default turtle state
+		xPos = TURTLESTARTX/2;
+		yPos =  TURTLESTARTY/2;
+		penDown = false;
+		direction = 180; //down
+		repaint();
+	}
+	/**
 	 * Constructor.
 	 * Create a panel with pen set to the middle and turtle pointing down the screen
 	 * The pen is up.
-	 * @IOException 
+	 *
 	 */
 	
 	public TurtleGraphics()
@@ -487,7 +631,8 @@ public class TurtleGraphics extends JPanel
 			
 	}
 	
+	
+	
 		
 		
 }
-

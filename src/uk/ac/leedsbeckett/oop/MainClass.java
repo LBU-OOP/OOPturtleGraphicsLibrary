@@ -32,7 +32,7 @@ public MainClass()
     
     MainFrame.setSize(640, 480);
     MainFrame.setVisible(true);;
-    //gp.about();
+    gp.about();
     gp.penDown();
    // gp.setTurtleImage("c:\\temp\\turtle.png");
   /*  gp.forward(100);
@@ -109,7 +109,7 @@ public MainClass()
 	 public void actionPerformed(ActionEvent event)
      {
    	  if (event.getSource() == but1)
-   		  gp.turnRight(22);
+   		  gp.turnRight("22");
    	  else if (event.getSource()==but2)
    		  	gp.forward(50);
    	  else if (event.getSource()==but3)
