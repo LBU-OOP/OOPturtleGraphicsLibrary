@@ -8,14 +8,14 @@ import javax.swing.JFrame;
 
 import uk.ac.leedsbeckett.oop.TurtleGraphics;
 
-public class MainClass implements ActionListener
+public class MainClass //implements ActionListener
 {
-private TurtleGraphics gp;
+private MyTurtle gp;
 JButton but1,but2, but3;
 public MainClass()
 {
-	gp = new TurtleGraphics();
-	
+	//gp = new TurtleGraphics();
+	 gp = new MyTurtle();
     JFrame MainFrame = new JFrame();
     MainFrame.setLayout(new FlowLayout());
     MainFrame.add(gp);
@@ -26,13 +26,13 @@ public MainClass()
     MainFrame.add(but2);
     MainFrame.add(but3);
    // ButtonListener bl = new ButtonListener();
-    but1.addActionListener(this); //djm tell the listener to check this
-    but2.addActionListener(this); //djm tell the listener to check this
-    but3.addActionListener(this); //djm tell the listener to check this
+ //   but1.addActionListener(this); //djm tell the listener to check this
+ //   but2.addActionListener(this); //djm tell the listener to check this
+ //   but3.addActionListener(this); //djm tell the listener to check this
     
     MainFrame.setSize(640, 480);
     MainFrame.setVisible(true);;
-    gp.about();
+    //gp.about();
     gp.penDown();
    // gp.setTurtleImage("c:\\temp\\turtle.png");
   /*  gp.forward(100);
@@ -114,8 +114,9 @@ public MainClass()
    		  	gp.forward(50);
    	  else if (event.getSource()==but3)
    		  	gp.turnLeft(22);
-  
-   	  System.out.println("hello");
+   	  else
+   		  gp.displayMessage("Unknown Command");
+   	  System.out.println("xxxxxxxx");
      }
 	  /* private class ButtonListener implements ActionListener
 	   {

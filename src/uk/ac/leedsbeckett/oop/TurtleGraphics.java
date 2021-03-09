@@ -3,7 +3,12 @@ package uk.ac.leedsbeckett.oop;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Graphics;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
@@ -11,11 +16,14 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
+import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 /**
- * <h1>TurtleGraphics</h1>
+ * TurtleGraphics
  * extended JPanel with simple drawing commands and a visual representation of a turtle to perform "turtle graphics" drawing operations.
  * the jar file should be added to your build path.
  * right click on your project, select "Build Path-Add External Archive" and add jar file.
@@ -23,54 +31,70 @@ import javax.swing.JPanel;
  * Don't forget to look at the inherited methods from JPanel and above, which will also be if use.
  * 
  * @author Duncan Mullier
- * @version 1.5 Mar 2020
+ * @version 2.0 
  * All software has bugs, if you find one please report to author. Ensure you have the latest version
- * V1.3 adds setPanelSize() to resize the turtle area
- * V1.4 adds getBufferedImage()
- * *V1.5 adds setBufferdImage()
- * V1.6 adds reset() to make resetting the turtle very, very easy.
- * V1.7 adds turnLeft/Right and Forward which take a number held in a string.
+
+ * V2.0 adds simple GUI interface, now an abstract class with CommandLineInterface Interface
  *<h2> example code </h2>
  * <pre>
+
 package whateverMyPackageIs;
 
-import uk.ac.leedsbeckett.oop.TurtleGraphics;
+import java.awt.FlowLayout;
 
 import javax.swing.JFrame;
 
-public class MainClass {
+import uk.ac.leedsbeckett.oop.TurtleGraphics;
 
-	public static void main(String[] args) 
+public class Main extends TurtleGraphics
+{
+	public static void main(String[] args)
 	{
-		TurtleGraphics gp = new TurtleGraphics();
-		JFrame MainFrame = new JFrame();
-		MainFrame.add(gp);
-		MainFrame.setSize(640, 480);
-		MainFrame.setVisible(true);;
-		gp.about();
-
+		new Main(); //create instance of class that extends TurtleGraphics (could be seperate class without main)
 	}
 
+	public Main()
+	{
+		JFrame MainFrame = new JFrame();		//create a frame to display the turtle panel on
+	    MainFrame.setLayout(new FlowLayout()); 	//not strictly necessary
+	    MainFrame.add(this);					//"this" is this object that extends turtle graphics so we are adding a turtle graphics panel to the frame
+	    MainFrame.pack();						//set the frame to a size we can see
+	    MainFrame.setVisible(true);				//now display it
+	    about();								//call the TurtleGraphics about method to display version information.
+	}
+
+	
+	public void processCommand(String command)	//this method must be provided because TurtleGraphics will call it when it's JTextField is used
+	{
+		//String parameter is the text typed into the TurtleGraphics JTextfield
+		//lands here if return was pressed or "ok" JButton clicked
+		//TO DO 
+	}
 }
+
 </pre>
-@since 12/2018
+@since 3/2020
  */
 @SuppressWarnings("serial")
 
-public class TurtleGraphics extends JPanel 
+public abstract class TurtleGraphics extends JPanel implements ActionListener, CommandLineInterface
 {
 
 	/**
-	 * The default BG colour of the image.
+	 * public version number.
 	 */
-	private final float VERSION = 1.6f; //jar not yet generated V1.2 fixes clear() not working
+	public final float VERSION = 2.0f; 
 	private  Color background_Col = Color.DARK_GRAY;
 	private final static int TURTLE_X_SIZE = 72, TURTLE_Y_SIZE = 69;
-	private final int TURTLESTARTX = 800, TURTLESTARTY = 400;
+	private final int TURTLESTARTX = 1000, TURTLESTARTY = 400;
 	private  int panelWidth = TURTLESTARTX;
 	private  int panelHeight = TURTLESTARTY;
 	
 	private JFrame hostFrame = null;
+	
+	private JTextField commandLine = null;
+	private JLabel messages = null;
+	private JButton okBut = null;
 	/**
 	 * The underlying image used for drawing. This is required so any previous drawing activity is persistent on the panel.
 	 * image is the drawing area and turtleImage is for the graphical representation of the turtle/pen
@@ -107,6 +131,14 @@ public class TurtleGraphics extends JPanel
 	 */
 	protected int sleepPeriod=10; //delay for turtle animation
 
+	/**
+	 * must be implemented in your class so that TurtleGraohics can call your code when something happens at the TurtleGraphics GUI (i.e. user presses return in text field or clicks ok button).
+	 * If you do not implement this method you will get a syntax error.
+	 * @param command is the String typed into the text field before return was pressed or ok was clicked.
+	 */
+	public abstract void processCommand(String command);
+	
+	
 	//takes a string, splits it and tried to convert it into integers
 	//if it can't it throws a numberformatexception
 	private int[] getParameters(String args) 
@@ -357,8 +389,8 @@ public class TurtleGraphics extends JPanel
 	}
 	
 		/**
-		 * turtle is rotated to the right by <amount> degrees. 
-		 * @param amount is a String
+		 * turtle is rotated to the right in degrees. 
+		 * @param amount is a String representation of the degrees to rotate
 		 * if param cannot be converted to an integer a NumberFormatException is thrown.
 		 */
 		public void turnRight(String amount)
@@ -381,9 +413,9 @@ public class TurtleGraphics extends JPanel
 	}
 	
 	/**
-	 * turtle is rotated 90 degrees to the right by amount degrees. i.e. it will rotate right by amount degrees  	
+	 * turtle is rotated to the right by amount degrees. i.e. it will rotate right by amount degrees  	
 	 * The turtle will wrap around if it goes beyond 360
-	 * @param amount degrees to rotate
+	 * @param amount is an integer 
 	 */
 	public void turnRight(int amount)
 	{
@@ -395,8 +427,8 @@ public class TurtleGraphics extends JPanel
 	}
 	
 	/**
-	 * turtle is rotated to the right by <amount> degrees. 
-	 * @param amount is a String
+	 * turtle is rotated to the left in degrees. 
+	 * @param amount is a String representation of the degrees to rotate
 	 * if param cannot be converted to an integer a NumberFormatException is thrown.
 	 */
 	public void turnLeft(String amount)
@@ -422,7 +454,7 @@ public class TurtleGraphics extends JPanel
 	/**
 	 * turtle is rotated 90 degrees to the right by amount degrees. i.e. it will rotate right by amount degrees  	
 	 * The turtle will wrap around if it goes beyond 360
-	 * @param amount degrees to rotate
+	 * @param amount is an integer
 	 */
 	public void turnLeft(int amount)
 	{
@@ -431,7 +463,7 @@ public class TurtleGraphics extends JPanel
 	}
 	
 	/**
-	 * turtle is rotated to the right by <amount> degrees. 
+	 * turtle is moved in the direction it is pointing by given nuymber of pixels. 
 	 * @param amount is a String
 	 * if param cannot be converted to an integer a NumberFormatException is thrown.
 	 */
@@ -445,7 +477,7 @@ public class TurtleGraphics extends JPanel
 	/**
 	 * move the turtle (in the direction it is pointing) by {distance} pixels. A line will be drawn if the pen is down, not if it is up
 	 * 
-	 * @param distance in pixels to move
+	 * @param distance in an integer
 	 */
 	public void forward(int distance)
 	{
@@ -514,6 +546,7 @@ public class TurtleGraphics extends JPanel
 	/**
 	 * unimplemented circle command
 	 * @param radius radius of the circle to draw
+	 * throws unsupportedOperationException
 	 */
 	public void circle(int radius)
 	{
@@ -523,17 +556,22 @@ public class TurtleGraphics extends JPanel
 	
 //	@Override
 	/**
-	 * overridden paint method to handle image updating (do not call directly, use repaint();)
+	 * overridden paintComponent method to handle image updating (do not call directly, use repaint();)
 	 */
-	public void paint(Graphics g) 
+	public void paintComponent(Graphics g) 
 	{
 		setTurtleGraphicDirection();
 		// render the image on the panel.
 		g.drawImage(image, 0, 0, null);
 		g.drawImage(turtleDisplay, xPos-TURTLE_X_SIZE/2, yPos-TURTLE_Y_SIZE/2, null);
-		//g.drawImage(turtleDisplay, 0, 0, null);
+		
 	}
 
+	/**
+	 * set the preferred size of the TurtleGraphics panel
+	 * @param width in pixels
+	 * @param height in pixels
+	 */
 	public void setPreferredSize(int width, int height)
 	{
 		//System.out.println("setting size");
@@ -545,7 +583,7 @@ public class TurtleGraphics extends JPanel
 	 * give full path or store in application directory
 	 * don't make the image too big, have background of the image transparent and it should be pointing right (90 degrees)
 	 * best to make the image have a transparent background(Google it).
-	 * @param filename file or path to save the to
+	 * @param filename file or path and filename of the image to load
 	 */
 	public void setTurtleImage(String filename)
 	{
@@ -575,6 +613,17 @@ public class TurtleGraphics extends JPanel
 	}
 	
 	/**
+	 * hide or show the textfield, ok button and label
+	 * @param visible true to show, false to hide
+	 */
+	public void setGUIVisible(boolean visible)
+	{
+		messages.setVisible(visible);
+		commandLine.setVisible(visible);
+		okBut.setVisible(visible);
+	}
+	
+	/**
 	 * reset() moves turtle to initial position
 	 */
 	public void reset()
@@ -588,6 +637,26 @@ public class TurtleGraphics extends JPanel
 		direction = 180; //down
 		repaint();
 	}
+	
+	/**
+	 * display a message in the message JLabel
+	 * @param message string to display in the panel's textfield
+	 */
+	public void displayMessage(String message)
+	{
+		this.messages.setText(message);
+		
+	}
+	
+	/**
+	 * clears JTextField and JLabel
+	 */
+	public void clearInterface()
+	{
+		this.messages.setText("");
+		this.commandLine.setText("");
+	}
+	
 	/**
 	 * Constructor.
 	 * Create a panel with pen set to the middle and turtle pointing down the screen
@@ -603,20 +672,38 @@ public class TurtleGraphics extends JPanel
 				penDown = false;
 				direction = 180; //down
 
+				//JPanel panel = new JPanel();
+				
 				setPreferredSize(new Dimension(panelWidth, panelHeight));
-
+				setLayout(new FlowLayout());
+				//setLayout(new GridLayout());
+				
+				commandLine = new JTextField(25);
+				
+				//panel.add(commandLine);
+				add(commandLine);
+				commandLine.setVisible(true);
+				commandLine.addActionListener(this);
+				okBut = new JButton("ok");
+				add(okBut);
+				okBut.setVisible(true);
+				okBut.addActionListener(this);
+				messages = new JLabel("TurtleGraphics V"+VERSION);
+				messages.setBackground(Color.white);
+				messages.setForeground(Color.red);
+				//messages.setText("hello");
+				add(messages);
+				messages.setVisible(true);
 				//main drawing area
 				image = new BufferedImage(panelWidth, panelHeight, BufferedImage.TYPE_INT_RGB);
 				
 				//small image to display on top of drawing area to represent the turtle
-				//turtleDisplay =  new BufferedImage(TURTLE_X_SIZE, TURTLE_Y_SIZE, BufferedImage.TYPE_INT_RGB);
+				
 				try {
 					turtle0 = ImageIO.read(TurtleGraphics.class.getResource("turtle90.png"));
-					
-					//turtle90 = ImageIO.read(TurtleGraphics.class.getResource("turtle90.png"));//ImageIO.read(new File("turtle90.png"));
-					//turtle180 = ImageIO.read(TurtleGraphics.class.getResource("turtle180.png"));//ImageIO.read(new File("turtle180.png"));
-					//turtle270 = ImageIO.read(TurtleGraphics.class.getResource("turtle270.png"));//ImageIO.read(new File("turtle270.png"));
-				} catch (IOException e) {
+				
+				} catch (IOException e) 
+				{
 					//throw new IOException("turtle images not found, you must have turtle0/90/180/270.png in project directory");
 					e.printStackTrace();
 				}	
@@ -626,9 +713,24 @@ public class TurtleGraphics extends JPanel
 				setMaximumSize(new Dimension(image.getWidth(), image.getHeight()));
 				setSize(panelWidth, panelHeight);
 				setVisible(true);
-				
-				clear();
+				revalidate();
+				//clear();
 			
+	}
+
+
+	/**
+	 * implemented abstract method from ActionListener interface.
+	 * Reads text from commandLine JTextField and calls abstract method processCommand()
+	 * passing the text in the jTextField to it. The jTextField is then cleared.
+	 * Derived classes must provide a definition of void processCommand(String command)
+	 */
+	@Override
+	public void actionPerformed(ActionEvent arg0)
+	{
+		processCommand(commandLine.getText());
+		commandLine.setText("");
+		
 	}
 	
 	
