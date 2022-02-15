@@ -1,10 +1,12 @@
 package uk.ac.leedsbeckett.oop;
 
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -23,34 +25,34 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 /**
- * TurtleGraphics
+ * LBUGraphics
  * extended JPanel with simple drawing commands and a visual representation of a turtle to perform "turtle graphics" drawing operations.
  * the jar file should be added to your build path.
  * right click on your project, select "Build Path-Add External Archive" and add jar file.
- * It will appear in your project explorer under "referenced libraries", inside the jar will be TurtleGraphics.class
+ * It will appear in your project explorer under "referenced libraries", inside the jar will be LBUGraphics.class
  * Don't forget to look at the inherited methods from JPanel and above, which will also be if use.
  * 
  * @author Duncan Mullier
- * @version 2.0 
+ * @version 3.1 
  * All software has bugs, if you find one please report to author. Ensure you have the latest version
-
+ * V3.1 threaded about() now holds execution until it has completed, added stroke and graphics2d
  * V2.0 adds simple GUI interface, now an abstract class with CommandLineInterface Interface
  *<h2> example code </h2>
  * <pre>
 
-package whateverMyPackageIs;
+
 
 import java.awt.FlowLayout;
 
 import javax.swing.JFrame;
 
-import uk.ac.leedsbeckett.oop.TurtleGraphics;
+import uk.ac.leedsbeckett.oop.LBUGraphics;
 
-public class Main extends TurtleGraphics
+public class Main extends LBUGraphics
 {
 	public static void main(String[] args)
 	{
-		new Main(); //create instance of class that extends TurtleGraphics (could be seperate class without main)
+		new Main(); //create instance of class that extends LBUGraphics (could be separate class without main), gets out of static context
 	}
 
 	public Main()
@@ -60,37 +62,39 @@ public class Main extends TurtleGraphics
 	    MainFrame.add(this);					//"this" is this object that extends turtle graphics so we are adding a turtle graphics panel to the frame
 	    MainFrame.pack();						//set the frame to a size we can see
 	    MainFrame.setVisible(true);				//now display it
-	    about();								//call the TurtleGraphics about method to display version information.
+	    about();								//call the LBUGraphics about method to display version information.
 	}
 
 	
-	public void processCommand(String command)	//this method must be provided because TurtleGraphics will call it when it's JTextField is used
+	public void processCommand(String command)	//this method must be provided because LBUGraphics will call it when it's JTextField is used
 	{
-		//String parameter is the text typed into the TurtleGraphics JTextfield
+		//String parameter is the text typed into the LBUGraphics JTextfield
 		//lands here if return was pressed or "ok" JButton clicked
 		//TO DO 
 	}
 }
 
 </pre>
-@since 3/2020
+@since 1/2022
  */
 @SuppressWarnings("serial")
 
-public abstract class TurtleGraphics extends JPanel implements ActionListener, CommandLineInterface
+public abstract class LBUGraphics extends JPanel implements ActionListener, CommandLineInterface
 {
 
 	/**
 	 * public version number.
 	 */
-	public final float VERSION = 2.0f; 
+	public final float VERSION = 3.1f; 
 	private  Color background_Col = Color.DARK_GRAY;
 	private final static int TURTLE_X_SIZE = 72, TURTLE_Y_SIZE = 69;
 	private final int TURTLESTARTX = 1000, TURTLESTARTY = 400;
 	private  int panelWidth = TURTLESTARTX;
 	private  int panelHeight = TURTLESTARTY;
+	private float StrokeWidth = 1;
+	private BasicStroke Stroke = new BasicStroke( StrokeWidth );
 	
-	private JFrame hostFrame = null;
+	
 	
 	private JTextField commandLine = null;
 	private JLabel messages = null;
@@ -99,7 +103,7 @@ public abstract class TurtleGraphics extends JPanel implements ActionListener, C
 	 * The underlying image used for drawing. This is required so any previous drawing activity is persistent on the panel.
 	 * image is the drawing area and turtleImage is for the graphical representation of the turtle/pen
 	 */
-	private BufferedImage image, turtleDisplay, turtle0, turtle90, turtle180, turtle270;
+	private BufferedImage image, turtleDisplay, turtle0;
 	
 	/**
 	 * Colour of the pen the turtle draws with (A Java Color)
@@ -132,7 +136,7 @@ public abstract class TurtleGraphics extends JPanel implements ActionListener, C
 	protected int sleepPeriod=10; //delay for turtle animation
 
 	/**
-	 * must be implemented in your class so that TurtleGraohics can call your code when something happens at the TurtleGraphics GUI (i.e. user presses return in text field or clicks ok button).
+	 * must be implemented in your class so that TurtleGraohics can call your code when something happens at the LBUGraphics GUI (i.e. user presses return in text field or clicks ok button).
 	 * If you do not implement this method you will get a syntax error.
 	 * @param command is the String typed into the text field before return was pressed or ok was clicked.
 	 */
@@ -153,24 +157,16 @@ public abstract class TurtleGraphics extends JPanel implements ActionListener, C
 			}
 			catch(NumberFormatException e)
 			{
-				throw new NumberFormatException("***TurtleGraphics Exception*** cannot convert parameter "+(i+1)+" (\""+split[i]+ "\") to an integer");				
+				throw new NumberFormatException("***LBUGraphics Exception*** cannot convert parameter "+(i+1)+" (\""+split[i]+ "\") to an integer");				
 			}
 		}
 		return params;
 	}
 	
 	
+		
 	/**
-	 * returns the graphicsContext of the Turtle display so you can drw on it using the normal Java drawing methods
-	 * @return graphics context
-	 */
-	public Graphics getGraphicsConext()
-	{
-		return  image.getGraphics();
-	}
-	
-	/**
-	 * returns the graphicsContext (same as above but spelt correctly) of the Turtle display so you can drw on it using the normal Java drawing methods
+	 * returns the graphicsContext of the Turtle display so you can draw on it using the normal Java drawing methods
 	 * @return graphics context
 	 */
 	public Graphics getGraphicsContext()
@@ -179,7 +175,17 @@ public abstract class TurtleGraphics extends JPanel implements ActionListener, C
 	}
 	
 	/**
-	 * return a BufferedImage of he display, so that it can be saved
+	 * returns the graphicsContext of the Turtle display so you can draw on it using the extended Graphics2Dl Java drawing methods
+	 * @return graphics context
+	 */
+	public Graphics2D getGraphics2DContext()
+	{
+		Graphics2D g2 = (Graphics2D) getGraphicsContext();
+		return  g2;
+	}
+	
+	/**
+	 * return a BufferedImage of the display, so that it can be saved
 	 * @return BufferedImage of display
 	 */
 	public BufferedImage getBufferedImage()
@@ -188,7 +194,7 @@ public abstract class TurtleGraphics extends JPanel implements ActionListener, C
 	}
 	
 	/**
-	 * sets the background image to be the passed in BufferedImage
+	 * sets the background image to be the passed in BufferedImage, so for example, a previously saved image can be restored
 	 * @param newImage saved BufferedImage
 	 */
 	public void setBufferedImage(BufferedImage newImage)
@@ -196,15 +202,8 @@ public abstract class TurtleGraphics extends JPanel implements ActionListener, C
 		image = newImage;
 		repaint();
 	}
-		/**
-	 * Draw a line on the image using the given colour bypassing the turtle system
-	 * 
-	 * @param color colour of line
-	 * @param x1 x and
-	 * @param y1 y coordinate of start of line
-	 * @param x2 z and
-	 * @param y2 y coordinate of end of line
-	 */
+	
+	
 	
 	/**
 	 * getPenColour returns the colour that the turtle draws in
@@ -215,7 +214,29 @@ public abstract class TurtleGraphics extends JPanel implements ActionListener, C
 		return PenColour;
 	}
 	
-	//public void setPenalSize()
+	/**
+	 * sets the width of the line drawn
+	 * @param strokeWidth integer representing the thickness of the line
+	 * @param dashed if true line will be dashed, solid if false
+	 */
+	public void setStroke(int strokeWidth, boolean dashed)
+	{
+		if(dashed)
+		{
+		 float[] fa = {10, 10, 10};       // The dash pattern
+		 Stroke = new BasicStroke(strokeWidth, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 10, fa, 10);
+		}
+		else
+		{
+			Stroke = new BasicStroke(strokeWidth);
+		}
+		this.StrokeWidth = strokeWidth;
+		
+		Graphics2D g2 = (Graphics2D) image.getGraphics();
+		g2.setStroke(Stroke);
+		
+	}
+	
 	/**
 	 * setPenColour sets the colour that the turtle will draw in
 	 * @param col Java Color
@@ -235,7 +256,7 @@ public abstract class TurtleGraphics extends JPanel implements ActionListener, C
 	}
 	
 	/**
-	 * draws a line directly on the panel without affecting the turtle
+	 * draws a line directly on the panel without affecting the turtle, it uses the stroke previously set by setStroke()
 	 * @param color colour to draw in 
 	 * @param x1 xpos of start of line
 	 * @param y1 ypos of start of line
@@ -245,8 +266,9 @@ public abstract class TurtleGraphics extends JPanel implements ActionListener, C
 	public void drawLine(Color color, int x1, int y1, int x2, int y2) 
 	{
 		
-		Graphics g = image.getGraphics();
+		Graphics2D g = (Graphics2D) image.getGraphics();
 		g.setColor(color);
+		g.setStroke(Stroke);
 		g.drawLine(x1, y1, x2, y2);
 	
 	}
@@ -300,6 +322,7 @@ public abstract class TurtleGraphics extends JPanel implements ActionListener, C
 	 */
 	public void about()
 	{
+		setStroke(10,true);
 		Thread t = new Thread() 
 		{
 			public void run() 
@@ -348,7 +371,7 @@ public abstract class TurtleGraphics extends JPanel implements ActionListener, C
 
 				PenColour = Color.GREEN;
 				
-				g.drawString("TurtleGraphics Version "+VERSION,250,250);
+				g.drawString("LBUGraphics Version "+VERSION,250,250);
 				penUp();
 				forward(100);
 				for(int i = 0; i<360; i++)
@@ -360,7 +383,8 @@ public abstract class TurtleGraphics extends JPanel implements ActionListener, C
 			}
 		};
 		t.start();
-		
+		while(t.isAlive()); //wait until drawing finished.
+		setStroke(1,false);
 	}
 	
 	/**
@@ -546,12 +570,12 @@ public abstract class TurtleGraphics extends JPanel implements ActionListener, C
 	/**
 	 * unimplemented circle command
 	 * @param radius radius of the circle to draw
-	 * throws unsupportedOperationException
+	 * 
 	 */
 	public void circle(int radius)
 	{
 		
-		throw new java.lang.UnsupportedOperationException("unimplemented command"); 
+		System.out.println("I can't draw a circle of "+radius+" because the code hasn't been written");
 	}
 	
 //	@Override
@@ -568,7 +592,7 @@ public abstract class TurtleGraphics extends JPanel implements ActionListener, C
 	}
 
 	/**
-	 * set the preferred size of the TurtleGraphics panel
+	 * set the preferred size of the LBUGraphics panel
 	 * @param width in pixels
 	 * @param height in pixels
 	 */
@@ -636,6 +660,8 @@ public abstract class TurtleGraphics extends JPanel implements ActionListener, C
 		penDown = false;
 		direction = 180; //down
 		repaint();
+		setStroke(1,false);
+		
 	}
 	
 	/**
@@ -664,7 +690,7 @@ public abstract class TurtleGraphics extends JPanel implements ActionListener, C
 	 *
 	 */
 	
-	public TurtleGraphics()
+	public LBUGraphics()
 	{
 		//set default turtle state
 				xPos = panelWidth/2;
@@ -688,7 +714,7 @@ public abstract class TurtleGraphics extends JPanel implements ActionListener, C
 				add(okBut);
 				okBut.setVisible(true);
 				okBut.addActionListener(this);
-				messages = new JLabel("TurtleGraphics V"+VERSION);
+				messages = new JLabel("LBUGraphics V"+VERSION);
 				messages.setBackground(Color.white);
 				messages.setForeground(Color.red);
 				//messages.setText("hello");
@@ -700,7 +726,7 @@ public abstract class TurtleGraphics extends JPanel implements ActionListener, C
 				//small image to display on top of drawing area to represent the turtle
 				
 				try {
-					turtle0 = ImageIO.read(TurtleGraphics.class.getResource("turtle90.png"));
+					turtle0 = ImageIO.read(LBUGraphics.class.getResource("turtle90.png"));
 				
 				} catch (IOException e) 
 				{
