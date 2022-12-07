@@ -85,7 +85,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	/**
 	 * public version number.
 	 */
-	public final float VERSION = 3.1f; 
+	public final float VERSION = 4.0f; 
 	private  Color background_Col = Color.DARK_GRAY;
 	private final static int TURTLE_X_SIZE = 72, TURTLE_Y_SIZE = 69;
 	private final int TURTLESTARTX = 1000, TURTLESTARTY = 400;
@@ -265,7 +265,8 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	 */
 	public void drawLine(Color color, int x1, int y1, int x2, int y2) 
 	{
-		
+		x2+=10;
+		y2+=10;
 		Graphics2D g = (Graphics2D) image.getGraphics();
 		g.setColor(color);
 		g.setStroke(Stroke);
@@ -328,10 +329,13 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 			public void run() 
 			{
 				int dx = 50;
+				xPos=yPos=250;
 				Graphics g = image.getGraphics();
 				Color savePen = PenColour; //save drawing pen
 				boolean savePendown = penDown;
 				penDown();
+				drawCircle(200);
+				/*
 				for(int i=0; i<10; i++)
 				{
 					forward(50+(i*2));
@@ -366,18 +370,19 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 						PenColour = Color.YELLOW;
 					else
 						PenColour = Color.RED;
-					
+					drawCircle();
 				}
-
+*/
 				PenColour = Color.GREEN;
 				
 				g.drawString("LBUGraphics Version "+VERSION,250,250);
-				penUp();
+				/*penUp();
 				forward(100);
 				for(int i = 0; i<360; i++)
-					turnRight(10);
+					turnRight(10);*/
 				penDown = savePendown;
 				PenColour = savePen; //restore pen
+				
 				repaint();
 			   
 			}
@@ -683,6 +688,141 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 		this.commandLine.setText("");
 	}
 	
+	/**
+	 * raw drawing methods
+	 */
+	final int QUADSIZE = 10000;
+	int[][] xs = new int[8][QUADSIZE];
+	int[][] ys = new int[8][QUADSIZE];
+	int up = 0;
+	int down = 0;//QUADSIZE;
+	public void drawCircle(int radius)
+	{
+		
+		setTurtleSpeed(500);
+		Thread t = new Thread() 
+		{
+			public void run() 
+			{
+				int count = 0;
+				int gd=0, gm; //,h,k,r;  
+				double x,y,x2;  
+				int h=xPos, k=yPos, r=radius;  
+				x=0;
+				y=r;  
+				x2 = r/Math.sqrt(2);  
+				while(x<=x2)  
+				{  
+					y = Math.sqrt(r*r - x*x);  
+					setPixel((int)Math.floor(x), (int)Math.floor(y), h,k);  
+					x += 1;  
+					count++;
+				} 
+				//calculated 8 quads now plot them in order
+				PenColour = Color.red;
+				for(int i=0; i<8; i++)
+				{
+					int start = 0;
+					int end = count-1;
+					int step = 1;
+					if(i % 2 == 1 )
+					{
+						start = count-1;
+						end = 0;
+						step = -1;
+					}
+					else
+					{
+						start = 0;
+						end = count;
+						step = 1;
+					}
+					for(int j=start; j != end; j = j + step)
+					{
+						
+						drawLine(PenColour, xs[i][j], ys[i][j],  xs[i][j]+10, ys[i][j]+10); 
+					   try {
+							Thread.sleep(1);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} //wait until drawing finished.
+					   xPos = xs[i][j];
+					   yPos = ys[i][j];
+					    repaint();
+					}
+				}
+			}
+		};
+		t.start();
+		while(t.isAlive());
+		int x=0;	
+	}
+	
+	void setPixel(int x, int y, int h, int k)  
+	{  
+		
+		xPos = x+h;
+		yPos = y+k; //update turtle position
+		PenColour = Color.red; //up 3
+		xs[3][up] = x+h;
+		ys[3][up] = y+k;
+	    //drawLine(PenColour, x+h, y+k, x+h, y+k);
+	    
+	    PenColour = Color.green;  //down 0
+	    xs[0][down] = x+h;
+		ys[0][down] = -y+k;
+	    //drawLine(PenColour, x+h, -y+k, x+h, -y+k); 
+	    
+	    PenColour = Color.blue; //down 7
+	    xs[7][down] = -x+h;
+		ys[7][down] = -y+k;
+	    //drawLine(PenColour, -x+h, -y+k, -x+h, -y+k);  
+	    
+	    PenColour = Color.cyan; //up 4
+	    xs[4][up] = -x+h;
+		ys[4][up] = y+k;
+	    //drawLine(PenColour, -x+h, y+k, -x+h, y+k);  
+	    
+	    PenColour = Color.white; //down 2
+	    xs[2][down] = y+h;
+		ys[2][down] = x+k;
+	    //drawLine(PenColour, y+h, x+k, y+h, x+k);  
+	    
+	    PenColour = Color.pink; //up 1
+	    xs[1][up] = y+h;
+		ys[1][up] = -x+k;
+	    //drawLine(PenColour, y+h, -x+k, y+h, -x+k);  
+	    
+	    PenColour = Color.yellow; //up 6
+	    xs[6][up] = -y+h;
+		ys[6][up] = -x+k;
+	    //drawLine(PenColour, -y+h, -x+k, -y+h, -x+k);  
+	    
+	    PenColour = Color.orange; //down 5
+	    xs[5][down] = -y+h;
+		ys[5][down] = x+k;
+		up++;
+		down++;
+	    //drawLine(PenColour, -y+h, x+k, -y+h, x+k);  
+	 
+	}  
+	//save quad x,y data for later drawing in sequence
+	//some quads go forwards, some backwards, store in the same order for sequential drawing
+
+	/*int[][] quad = new int[8][QUADSIZE];
+	int[] q2 = new int[QUADSIZE];
+	int[] q3 = new int[QUADSIZE];
+	int[] q4 = new int[QUADSIZE];
+	int[] q5 = new int[QUADSIZE];
+	int[] q6 = new int[QUADSIZE];
+	int[] q7 = new int[QUADSIZE];
+	int[] q8 = new int[QUADSIZE];
+	private void saveQuad(int quad, boolean direction, int x, int y)
+	{
+		int inc=1; //incrementor for array
+		
+	}*/
 	/**
 	 * Constructor.
 	 * Create a panel with pen set to the middle and turtle pointing down the screen

@@ -23,7 +23,7 @@ public class MainClass extends LBUGraphics{
                                                                    //call the TurtleGraphics about method to display version information.
 		//setStroke(10,true);
 		about();
-		setStroke(1,true);
+		/*setStroke(1,true);
 		penDown();
 		forward(200);
 		turnRight(90);
@@ -32,7 +32,7 @@ public class MainClass extends LBUGraphics{
 		forward(200);
 		turnRight(90);
 		forward(200);
-		turnRight(90);
+		turnRight(90);*/
 		
 		
 	}
