@@ -2,6 +2,7 @@ package uk.ac.leedsbeckett.oop;
 
 
 import java.awt.BasicStroke;
+import java.util.ArrayList;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -691,6 +692,9 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	/**
 	 * raw drawing methods
 	 */
+	final int quadrants = 8;
+	ArrayList<ArrayList<Integer>> xcoords = new ArrayList<>(quadrants);
+	ArrayList<ArrayList<Integer>> ycoords = new ArrayList<>(quadrants);
 	final int QUADSIZE = 10000;
 	int[][] xs = new int[8][QUADSIZE];
 	int[][] ys = new int[8][QUADSIZE];
@@ -698,7 +702,11 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	int down = 0;//QUADSIZE;
 	public void drawCircle(int radius)
 	{
-		
+		//initialise multi-dimensional arraylists
+		for(int i=0; i < quadrants; i++) {
+		    xcoords.add(new ArrayList<Integer>());
+		    ycoords.add(new ArrayList<Integer>());
+		}
 		setTurtleSpeed(500);
 		Thread t = new Thread() 
 		{
@@ -740,7 +748,8 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 					for(int j=start; j != end; j = j + step)
 					{
 						
-						drawLine(PenColour, xs[i][j], ys[i][j],  xs[i][j]+10, ys[i][j]+10); 
+						//drawLine(PenColour, xs[i][j], ys[i][j],  xs[i][j]+10, ys[i][j]+10); 
+						drawLine(PenColour, xcoords.get(i).get(j), ycoords.get(i).get(j), xcoords.get(i).get(j)+10, ycoords.get(i).get(j)+10);//[i][j], ys[i][j],  xs[i][j]+10, ys[i][j]+10); 
 					   try {
 							Thread.sleep(1);
 						} catch (InterruptedException e) {
@@ -757,51 +766,71 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 		t.start();
 		while(t.isAlive());
 		int x=0;	
+		
 	}
 	
 	void setPixel(int x, int y, int h, int k)  
 	{  
 		
-		xPos = x+h;
-		yPos = y+k; //update turtle position
-		PenColour = Color.red; //up 3
+		//up 3
 		xs[3][up] = x+h;
 		ys[3][up] = y+k;
-	    //drawLine(PenColour, x+h, y+k, x+h, y+k);
+	    xcoords.get(3).add(x+h);
+	    ycoords.get(3).add(y+k);
+		//drawLine(PenColour, x+h, y+k, x+h, y+k);
 	    
 	    PenColour = Color.green;  //down 0
 	    xs[0][down] = x+h;
 		ys[0][down] = -y+k;
+		xcoords.get(0).add(x+h);
+		ycoords.get(0).add(-y+k);
 	    //drawLine(PenColour, x+h, -y+k, x+h, -y+k); 
 	    
 	    PenColour = Color.blue; //down 7
 	    xs[7][down] = -x+h;
 		ys[7][down] = -y+k;
+		xcoords.get(7).add(-x+h);
+		ycoords.get(7).add(-y+k);
 	    //drawLine(PenColour, -x+h, -y+k, -x+h, -y+k);  
 	    
 	    PenColour = Color.cyan; //up 4
 	    xs[4][up] = -x+h;
 		ys[4][up] = y+k;
+		xcoords.get(4).add(-x+h);
+		ycoords.get(4).add(y+k);
+
 	    //drawLine(PenColour, -x+h, y+k, -x+h, y+k);  
 	    
 	    PenColour = Color.white; //down 2
 	    xs[2][down] = y+h;
 		ys[2][down] = x+k;
+		xcoords.get(2).add(y+h);
+		ycoords.get(2).add(x+k);
+
 	    //drawLine(PenColour, y+h, x+k, y+h, x+k);  
 	    
 	    PenColour = Color.pink; //up 1
 	    xs[1][up] = y+h;
 		ys[1][up] = -x+k;
+		xcoords.get(1).add(y+h);
+		ycoords.get(1).add(-x+k);
+
 	    //drawLine(PenColour, y+h, -x+k, y+h, -x+k);  
 	    
 	    PenColour = Color.yellow; //up 6
 	    xs[6][up] = -y+h;
 		ys[6][up] = -x+k;
+		xcoords.get(6).add(-y+h);
+		ycoords.get(6).add(-x+k);
+
 	    //drawLine(PenColour, -y+h, -x+k, -y+h, -x+k);  
 	    
 	    PenColour = Color.orange; //down 5
 	    xs[5][down] = -y+h;
 		ys[5][down] = x+k;
+		xcoords.get(5).add(-y+h);
+		ycoords.get(5).add(x+k);
+
 		up++;
 		down++;
 	    //drawLine(PenColour, -y+h, x+k, -y+h, x+k);  
