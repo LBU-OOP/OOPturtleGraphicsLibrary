@@ -21,7 +21,7 @@ public class MainClass extends LBUGraphics{
          MainFrame.pack();                                           //set the frame to a size we can see
          MainFrame.setVisible(true);                         //now display it
                                                                    //call the TurtleGraphics about method to display version information.
-		//setStroke(10,true);
+		setStroke(1,false);
 		about();
 		/*setStroke(1,true);
 		penDown();
@@ -33,6 +33,10 @@ public class MainClass extends LBUGraphics{
 		turnRight(90);
 		forward(200);
 		turnRight(90);*/
+		setStroke(1,false);
+		forward(100);
+		penDown();
+		drawCircle(50,1);
 		
 		
 	}
