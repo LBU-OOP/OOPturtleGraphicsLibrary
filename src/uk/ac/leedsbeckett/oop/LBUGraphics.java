@@ -96,7 +96,6 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	private BasicStroke Stroke = new BasicStroke( StrokeWidth );
 	
 	
-	
 	private JTextField commandLine = null;
 	private JLabel messages = null;
 	private JButton okBut = null;
@@ -110,6 +109,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	 * Colour of the pen the turtle draws with (A Java Color)
 	 */
 	protected Color PenColour = Color.RED;
+	protected int penSize = 1; //used for raw drawing
 	
 	/**
 	 * a moving turtle will draw if this is true and not if it is false (set by penDown and PenUp methods)
@@ -134,7 +134,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	/**
 	 * delay for turtle animation
 	 */
-	protected int sleepPeriod=10; //delay for turtle animation
+	protected int sleepPeriod=2; //delay for turtle animation
 
 	/**
 	 * must be implemented in your class so that TurtleGraohics can call your code when something happens at the LBUGraphics GUI (i.e. user presses return in text field or clicks ok button).
@@ -208,7 +208,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	
 	/**
 	 * getPenColour returns the colour that the turtle draws in
-	 * @return Color pencolour
+	 * @return Color PenColour
 	 */
 	public Color getPenColour()
 	{
@@ -222,9 +222,10 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	 */
 	public void setStroke(int strokeWidth, boolean dashed)
 	{
+		float[] fa = {10, 10, 10};       // The dash pattern
 		if(dashed)
 		{
-		 float[] fa = {10, 10, 10};       // The dash pattern
+		 
 		 Stroke = new BasicStroke(strokeWidth, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 10, fa, 10);
 		}
 		else
@@ -266,8 +267,8 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	 */
 	public void drawLine(Color color, int x1, int y1, int x2, int y2) 
 	{
-		x2+=10;
-		y2+=10;
+		//x2+=10;
+		//y2+=10;
 		Graphics2D g = (Graphics2D) image.getGraphics();
 		g.setColor(color);
 		g.setStroke(Stroke);
@@ -324,19 +325,25 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	 */
 	public void about()
 	{
-		setStroke(10,true);
+		//setStroke(10,false);
 		Thread t = new Thread() 
 		{
 			public void run() 
 			{
+				int saveSleep = sleepPeriod;
+				sleepPeriod = 1;
 				int dx = 50;
 				xPos=yPos=250;
 				Graphics g = image.getGraphics();
 				Color savePen = PenColour; //save drawing pen
 				boolean savePendown = penDown;
 				penDown();
-				drawCircle(200);
-				/*
+				//brasenhamLine(500,300,150,100,true);
+				//bresenham(500,300,100,100);
+				//turnRight(180);
+				//turnLeft(180);
+				//drawCircle(100,1);
+				
 				for(int i=0; i<10; i++)
 				{
 					forward(50+(i*2));
@@ -352,6 +359,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 					turnRight(45);
 					forward(50+(i*2));
 					turnRight(45);
+					sleepPeriod = 1;
 					forward(50+(i*2));
 					forward(50+(i*2));
 					turnRight(45);
@@ -367,22 +375,25 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 					turnRight();
 					turnRight();
 					penDown();
+					sleepPeriod = 1;
 					if (i%2 == 0)
 						PenColour = Color.YELLOW;
 					else
 						PenColour = Color.RED;
-					drawCircle();
+					//drawCircle();
 				}
-*/
+
 				PenColour = Color.GREEN;
 				
 				g.drawString("LBUGraphics Version "+VERSION,250,250);
+				turnRight(359);
 				/*penUp();
 				forward(100);
 				for(int i = 0; i<360; i++)
 					turnRight(10);*/
 				penDown = savePendown;
 				PenColour = savePen; //restore pen
+				sleepPeriod = saveSleep;
 				
 				repaint();
 			   
@@ -390,7 +401,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 		};
 		t.start();
 		while(t.isAlive()); //wait until drawing finished.
-		setStroke(1,false);
+		//setStroke(1,false);
 	}
 	
 	/**
@@ -450,7 +461,29 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	public void turnRight(int amount)
 	{
 		amount = amount%360;
-		direction = direction + amount;
+		final int a = amount;
+		Thread t = new Thread() 
+		{
+			public void run() 
+			{
+				
+				for(int i=0; i<a; i++)
+				{
+					direction++;
+					repaint();
+					try {
+						Thread.sleep(sleepPeriod);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} //wait until drawing finished.
+				}
+			}
+			
+		};
+		t.start();
+		while(t.isAlive());
+		//direction = direction + amount;
 		direction = direction %360;
 		repaint();
 		
@@ -488,7 +521,31 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	 */
 	public void turnLeft(int amount)
 	{
-		direction -= amount%360;
+		amount = amount%360;
+		final int a = amount;
+		Thread t = new Thread() 
+		{
+			public void run() 
+			{
+				
+				for(int i=0; i<a; i++)
+				{
+					direction--;
+					repaint();
+					try {
+						Thread.sleep(sleepPeriod);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} //wait until drawing finished.
+				}
+			}
+			
+		};
+		t.start();
+		while(t.isAlive());
+		//direction = direction + amount;
+		direction = direction %360;
 		repaint();
 	}
 	
@@ -519,10 +576,11 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 		 double x2 = x1 + (Math.cos(angle) * distance);
 		 double y2 = y1 + (Math.sin(angle) * distance);
 		
-		 if (penDown)
-			{
-				drawLine(PenColour, xPos, yPos, (int)x2,(int) y2);
-			}
+		// if (penDown)
+		//	{
+			 	bresenham(xPos, yPos, (int)x2,(int) y2);
+				//drawLine(PenColour, xPos, yPos, (int)x2,(int) y2);
+		//	}
 			//now robot has moved to the new position
 		xPos = (int)x2;
 		yPos = (int)y2;
@@ -581,7 +639,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	public void circle(int radius)
 	{
 		
-		System.out.println("I can't draw a circle of "+radius+" because the code hasn't been written");
+		drawCircle(radius, 1);
 	}
 	
 //	@Override
@@ -692,48 +750,81 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	/**
 	 * raw drawing methods
 	 */
-	final int quadrants = 8;
-	ArrayList<ArrayList<Integer>> xcoords = new ArrayList<>(quadrants);
-	ArrayList<ArrayList<Integer>> ycoords = new ArrayList<>(quadrants);
-	final int QUADSIZE = 10000;
-	int[][] xs = new int[8][QUADSIZE];
-	int[][] ys = new int[8][QUADSIZE];
-	int up = 0;
-	int down = 0;//QUADSIZE;
-	public void drawCircle(int radius)
+	
+	public void drawCircle(int radius, int width)
 	{
+		//set turtle to right
+		int saveDirection = direction;
+		direction = 90;
+		//repaint();
+		//declare array lists to hold 8xquadrant data xcoords[8][data]
+		final int quadrants = 8;
+		ArrayList<ArrayList<Integer>> xcoords = new ArrayList<>(quadrants);
+		ArrayList<ArrayList<Integer>> ycoords = new ArrayList<>(quadrants);
 		//initialise multi-dimensional arraylists
 		for(int i=0; i < quadrants; i++) {
 		    xcoords.add(new ArrayList<Integer>());
 		    ycoords.add(new ArrayList<Integer>());
 		}
-		setTurtleSpeed(500);
-		Thread t = new Thread() 
+		//setTurtleSpeed(5);
+		Thread t = new Thread() //needs to be in a thread so system can update the display
 		{
+			int size = 5;
 			public void run() 
 			{
 				int count = 0;
 				int gd=0, gm; //,h,k,r;  
-				double x,y,x2;  
+				double xd,yd,x2;  
 				int h=xPos, k=yPos, r=radius;  
-				x=0;
-				y=r;  
+				xd=0;
+				yd=r;  
 				x2 = r/Math.sqrt(2);  
-				while(x<=x2)  
+				while(xd<=x2)  
 				{  
-					y = Math.sqrt(r*r - x*x);  
-					setPixel((int)Math.floor(x), (int)Math.floor(y), h,k);  
-					x += 1;  
+					yd = Math.sqrt(r*r - xd*xd);  
+					int x = (int) xd;
+					int y = (int) yd;
+					
+					//up 3
+				    xcoords.get(3).add(x+h);
+				    ycoords.get(3).add(y+k);
+					//down 0
+				    xcoords.get(0).add(x+h);
+					ycoords.get(0).add(-y+k);
+				    //down 7
+				    xcoords.get(7).add(-x+h);
+					ycoords.get(7).add(-y+k);
+				    //up 4
+				    xcoords.get(4).add(-x+h);
+					ycoords.get(4).add(y+k);
+					//down 2
+				    xcoords.get(2).add(y+h);
+					ycoords.get(2).add(x+k);
+					//up 1
+				   	xcoords.get(1).add(y+h);
+					ycoords.get(1).add(-x+k);
+					//up 6
+				   	xcoords.get(6).add(-y+h);
+					ycoords.get(6).add(-x+k);
+					//down 5
+					xcoords.get(5).add(-y+h);
+					ycoords.get(5).add(x+k);
+					xd += 1;  
 					count++;
 				} 
+				//calculate number of rotations
+				int rotations = xcoords.get(0).size() * 8; //plots per quadrants x quadrants
+				int round = (Math.round(rotations/360)) + 1;
+				
+				//System.out.println(rotations+ " rotations for radius "+radius+". Rotate every "+round);
 				//calculated 8 quads now plot them in order
-				PenColour = Color.red;
+				int plots = xcoords.get(0).size(); //the number of plots in this circle
 				for(int i=0; i<8; i++)
 				{
 					int start = 0;
 					int end = count-1;
 					int step = 1;
-					if(i % 2 == 1 )
+					if(i % 2 == 1 )		//some quads are calculated in the opposite direction (for drawing)
 					{
 						start = count-1;
 						end = 0;
@@ -747,111 +838,207 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 					}
 					for(int j=start; j != end; j = j + step)
 					{
-						
-						//drawLine(PenColour, xs[i][j], ys[i][j],  xs[i][j]+10, ys[i][j]+10); 
-						drawLine(PenColour, xcoords.get(i).get(j), ycoords.get(i).get(j), xcoords.get(i).get(j)+10, ycoords.get(i).get(j)+10);//[i][j], ys[i][j],  xs[i][j]+10, ys[i][j]+10); 
+						//turn the turtle a bit for each plot
+						if(j % round == 0)
+							direction++;
+						drawLine(PenColour, xcoords.get(i).get(j), ycoords.get(i).get(j), xcoords.get(i).get(j)+penSize, ycoords.get(i).get(j));//[i][j], ys[i][j],  xs[i][j]+10, ys[i][j]+10); 
 					   try {
-							Thread.sleep(1);
+							Thread.sleep(sleepPeriod);
 						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+							
 						} //wait until drawing finished.
-					   xPos = xs[i][j];
-					   yPos = ys[i][j];
-					    repaint();
+					   xPos = xcoords.get(i).get(j);//xs[i][j];
+					   yPos = ycoords.get(i).get(j);//ys[i][j];
+					   repaint();
 					}
 				}
 			}
 		};
 		t.start();
 		while(t.isAlive());
-		int x=0;	
-		
+		direction = saveDirection;
 	}
 	
-	void setPixel(int x, int y, int h, int k)  
-	{  
+	/**
+	 * plots a bresenham line point by point. It draws if the pen is down otherwise it just moves the turtle
+	 * @param x1
+	 * @param y1
+	 * @param x2
+	 * @param y2
+	 */
+	void bresenham(int x1, int y1, int x2, int y2) 
+	{    
+		Thread t = new Thread() 
+		{
+			
+			public void run() 
+			{
+				int dx = x2 - x1;
+				int dy = y2 - y1;
 		
-		//up 3
-		xs[3][up] = x+h;
-		ys[3][up] = y+k;
-	    xcoords.get(3).add(x+h);
-	    ycoords.get(3).add(y+k);
-		//drawLine(PenColour, x+h, y+k, x+h, y+k);
-	    
-	    PenColour = Color.green;  //down 0
-	    xs[0][down] = x+h;
-		ys[0][down] = -y+k;
-		xcoords.get(0).add(x+h);
-		ycoords.get(0).add(-y+k);
-	    //drawLine(PenColour, x+h, -y+k, x+h, -y+k); 
-	    
-	    PenColour = Color.blue; //down 7
-	    xs[7][down] = -x+h;
-		ys[7][down] = -y+k;
-		xcoords.get(7).add(-x+h);
-		ycoords.get(7).add(-y+k);
-	    //drawLine(PenColour, -x+h, -y+k, -x+h, -y+k);  
-	    
-	    PenColour = Color.cyan; //up 4
-	    xs[4][up] = -x+h;
-		ys[4][up] = y+k;
-		xcoords.get(4).add(-x+h);
-		ycoords.get(4).add(y+k);
+			    int error;
+			    /** first quarter */
+			    if(dx >= 0 && dy >= 0) 
+			    {
+			        /** 1st octant */
+			        if (dx >= dy) 
+			        {
+			            error = -dx;
+			            int y = y1;
+			            for(int x = x1; x < x2; x++) 
+			            {
+			            	sleepThread(x, y);
+			            	if (penDown) drawLine(PenColour, x, y, x + penSize, y + penSize);
+			                error = error + 2 * dy;
+			                if (error >= 0) {
+			                    y++;
+			                    error = error - 2 * dx;
+			                }
+			            }
+			        }
+			        /** 2nd octant */
+			        else {
+			            error = -dy;
+			            int x = x1;
+			            for(int y = y1; y < y2; y++) 
+			            {
+			            	sleepThread(x, y);
+			            	if (penDown) drawLine(PenColour, x, y, x + penSize, y + penSize);
+			                error = error + 2 * dx;
+			                if (error >= 0) {
+			                    x++;
+			                    error = error - 2 * dy ;
+			                }
+			            }
+			        }
+			    }
+			    /** second quarter */
+			    else if (dx <= 0 && dy >= 0) 
+			    {
+			        /** 4th octant */
+			        if(dx < -dy) {
+			            error = dx;
+			            int y = y1;
+			            for(int x = x1; x > x2; x--) 
+			            {
+			            	sleepThread(x, y);
+			            	if (penDown) drawLine(PenColour, x, y, x + penSize, y + penSize);
+			                error = error + 2 * dy;
+			                if (error >= 0) {
+			                    y++;
+			                    error = error + 2 * dx;
+			                }
+			            }
+			        }
+			        /** 3rd octant */
+			        else {
+			            error = -dy;
+			            int x = x1;
+			            for(int y = y1; y < y2; y++) 
+			            {
+			            	sleepThread(x, y);
+			            	if (penDown) drawLine(PenColour, x, y, x + penSize, y + penSize);
+			                error = error - 2 * dx;
+			                if (error >= 0) 
+			                {
+			                    x--;
+			                    error = error - 2 * dy;
+			                }
+			            }
+			        }
+			    }
+			    /** 3rd quarter */
+			    else if (dx <= 0 && dy <= 0) 
+			    {
+			        /** 5th octant */
+			        if(dx <= dy) {
+			            error = 2 * dx;
+			            int y = y1;
+			            for(int x = x1; x > x2; x--) 
+			            {
+			            	sleepThread(x, y);
+			            	if (penDown) drawLine(PenColour, x, y, x + penSize, y + penSize);
+			                error = error - 2 * dy;
+			                if (error >= 0) {
+			                    y--;
+			                    error = error + 2 * dx;
+			                }
+			            }
+			        }
+			        /** 6th octant */
+			        else {
+			            error = 2 * dy;
+			            int x = x1;
+			            for(int y = y1; y > y2; y--) 
+			            {
+			            	sleepThread(x, y);
+			            	if (penDown) drawLine(PenColour, x, y, x + penSize, y + penSize);
+			                error = error - 2 * dx;
+			                if (error >= 0) 
+			                {
+			                    x--;
+			                    error = error + 2 * dy ;
+			                }
+			            }
+			        }
+			    }
+			    /* 4th quarter */
+			    else if(dx >= 0 && dy <= 0) {
+			        /** 7th octant */
+			        if(dx < -dy) 
+			        {
+			            error = 2 * dy;
+			            int x = x1;
+			            for(int y = y1; y > y2; y--) 
+			            {
+			            	sleepThread(x, y);
+			            	if (penDown) drawLine(PenColour, x, y, x + penSize, y + penSize);
+			                error = error + 2 * dx;
+			                if (error >= 0) {
+			                    x++;
+			                    error = error + 2 * dy ;
+			                }
+			            }
+			        }
+			        /** 8th octant */
+			        else {
+			            error = -dx;
+			            int y = y1;
+			            for(int x = x1; x < x2; x++) 
+			            {
+			            	sleepThread(x, y);
+			            	if (penDown) drawLine(PenColour, x, y, x + penSize, y + penSize);
+			                error = error - 2 * dy;
+			                if (error >= 0) {
+			                    y--;
+			                    error = error - 2 * dx;
+			                }
+			            }
+			        }
+			    }
+			}//run
+		};//thread
+		t.start();
+		while(t.isAlive());
+	}
 
-	    //drawLine(PenColour, -x+h, y+k, -x+h, y+k);  
-	    
-	    PenColour = Color.white; //down 2
-	    xs[2][down] = y+h;
-		ys[2][down] = x+k;
-		xcoords.get(2).add(y+h);
-		ycoords.get(2).add(x+k);
-
-	    //drawLine(PenColour, y+h, x+k, y+h, x+k);  
-	    
-	    PenColour = Color.pink; //up 1
-	    xs[1][up] = y+h;
-		ys[1][up] = -x+k;
-		xcoords.get(1).add(y+h);
-		ycoords.get(1).add(-x+k);
-
-	    //drawLine(PenColour, y+h, -x+k, y+h, -x+k);  
-	    
-	    PenColour = Color.yellow; //up 6
-	    xs[6][up] = -y+h;
-		ys[6][up] = -x+k;
-		xcoords.get(6).add(-y+h);
-		ycoords.get(6).add(-x+k);
-
-	    //drawLine(PenColour, -y+h, -x+k, -y+h, -x+k);  
-	    
-	    PenColour = Color.orange; //down 5
-	    xs[5][down] = -y+h;
-		ys[5][down] = x+k;
-		xcoords.get(5).add(-y+h);
-		ycoords.get(5).add(x+k);
-
-		up++;
-		down++;
-	    //drawLine(PenColour, -y+h, x+k, -y+h, x+k);  
-	 
-	}  
-	//save quad x,y data for later drawing in sequence
-	//some quads go forwards, some backwards, store in the same order for sequential drawing
-
-	/*int[][] quad = new int[8][QUADSIZE];
-	int[] q2 = new int[QUADSIZE];
-	int[] q3 = new int[QUADSIZE];
-	int[] q4 = new int[QUADSIZE];
-	int[] q5 = new int[QUADSIZE];
-	int[] q6 = new int[QUADSIZE];
-	int[] q7 = new int[QUADSIZE];
-	int[] q8 = new int[QUADSIZE];
-	private void saveQuad(int quad, boolean direction, int x, int y)
+	/**
+	 * sleep the thread and update the turtle xPos and yPos (if positive) and repaint the display
+	 * @param x
+	 * @param y
+	 */
+	private void sleepThread(int x, int y)
 	{
-		int inc=1; //incrementor for array
-		
-	}*/
+		try {
+			Thread.sleep(sleepPeriod);
+		} catch (InterruptedException e) {}
+		if (xPos >-1 && yPos >-1)
+		{
+			xPos = x;
+			yPos = y;
+			repaint();
+		}
+	}
 	/**
 	 * Constructor.
 	 * Create a panel with pen set to the middle and turtle pointing down the screen
@@ -919,12 +1106,23 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	 * Reads text from commandLine JTextField and calls abstract method processCommand()
 	 * passing the text in the jTextField to it. The jTextField is then cleared.
 	 * Derived classes must provide a definition of void processCommand(String command)
+	 * runs in a thread so animations are visible
 	 */
 	@Override
 	public void actionPerformed(ActionEvent arg0)
 	{
-		processCommand(commandLine.getText());
-		commandLine.setText("");
+		Thread t = new Thread(new Runnable()
+		{
+			public void run()
+			{
+				processCommand(commandLine.getText());
+				commandLine.setText("");
+				
+			}
+		}
+		);
+		t.start();
+		
 		
 	}
 	

@@ -7,7 +7,7 @@ import uk.ac.leedsbeckett.oop.LBUGraphics;
 public class MainClass extends LBUGraphics{
 
 	public static void main(String[] args) {
-		MainClass o = new MainClass();
+		new MainClass();
 		
 		// TODO Auto-generated method stub
 
@@ -22,7 +22,7 @@ public class MainClass extends LBUGraphics{
          MainFrame.setVisible(true);                         //now display it
                                                                    //call the TurtleGraphics about method to display version information.
 		setStroke(1,false);
-		about();
+		//about();
 		/*setStroke(1,true);
 		penDown();
 		forward(200);
@@ -34,16 +34,30 @@ public class MainClass extends LBUGraphics{
 		forward(200);
 		turnRight(90);*/
 		setStroke(1,false);
-		forward(100);
+		//forward(100);
 		penDown();
 		drawCircle(50,1);
 		
 		
 	}
+	
 	@Override
-	public void processCommand(String command) {
-		// TODO Auto-generated method stub
-		
+	public void processCommand(String command)
+	{
+		if (command.equalsIgnoreCase("forward"))
+			forward(200);
+		if (command.equalsIgnoreCase("circle"))
+			circle(100);
+		if (command.equalsIgnoreCase("turnleft"))
+			turnLeft(90);
+		if (command.equalsIgnoreCase("turnright"))
+			turnRight(90);
+		if (command.equalsIgnoreCase("pendown"))
+			penDown();
+		if (command.equalsIgnoreCase("penup"))
+			penUp();
+		if (command.equalsIgnoreCase("about"))
+			about();
 	}
 
 }
