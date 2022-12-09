@@ -36,7 +36,7 @@ public class MainClass extends LBUGraphics{
 		setStroke(1,false);
 		//forward(100);
 		penDown();
-		drawCircle(50,1);
+	//	drawCircle(50,1);
 		
 		
 	}
@@ -44,10 +44,13 @@ public class MainClass extends LBUGraphics{
 	@Override
 	public void processCommand(String command)
 	{
+		String[] params = command.split(" ");
+		command = params[0];
+		
 		if (command.equalsIgnoreCase("forward"))
 			forward(200);
 		if (command.equalsIgnoreCase("circle"))
-			circle(100);
+			circle(50);
 		if (command.equalsIgnoreCase("turnleft"))
 			turnLeft(90);
 		if (command.equalsIgnoreCase("turnright"))
@@ -58,6 +61,15 @@ public class MainClass extends LBUGraphics{
 			penUp();
 		if (command.equalsIgnoreCase("about"))
 			about();
+		if (command.equalsIgnoreCase("set"))
+		{
+			
+			int degrees = Integer.parseInt(params[1]);
+			pointTurtle(degrees);
+			
+			
+		}
+		System.out.println(direction);
 	}
 
 }

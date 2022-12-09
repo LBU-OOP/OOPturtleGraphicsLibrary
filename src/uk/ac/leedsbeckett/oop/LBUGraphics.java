@@ -550,6 +550,28 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	}
 	
 	/**
+	 * rotate the turtle from its current rotation to the desired angle in the shortest direction, showing the animation
+	 * @param degrees
+	 */
+	public void pointTurtle(int degrees)
+	{
+		//shift origin
+		degrees -=90;
+		if(degrees <0)
+		{
+			degrees = 360 + degrees;	//+ because it's negative
+		}
+		//clockwise or anticlockwise?
+		int rot = degrees - direction;
+		if (rot<0)
+		{
+			rot*=-1;	//make positive
+			turnLeft(rot);
+		}
+			else
+			turnRight(rot);
+	}
+	/**
 	 * turtle is moved in the direction it is pointing by given nuymber of pixels. 
 	 * @param amount is a String
 	 * if param cannot be converted to an integer a NumberFormatException is thrown.
@@ -625,7 +647,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 		final AffineTransformOp rotateOp = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
 		turtleDisplay = rotateOp.filter(turtle0,turtleDisplay);
 		
-		repaint();
+		//repaint();
 
 		
 	}
@@ -638,8 +660,25 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	 */
 	public void circle(int radius)
 	{
-		
-		drawCircle(radius, 1);
+		int saveDirection = direction;
+		boolean savePendown = penDown;
+		int savex = xPos;
+		int savey = yPos;
+		//direction = 90;
+		//move turtle to outer edge of circle
+		pointTurtle(0);
+		penUp();
+		forward(radius);
+		penDown = savePendown;
+		xPos = savex;
+		yPos = savey;
+		drawCircle(radius, xPos, yPos);  // radius because turtle has animated to edge of circle
+		//move turtle back
+		pointTurtle(180);
+		penUp();
+		forward(radius);
+		penDown = savePendown;
+		direction = saveDirection;
 	}
 	
 //	@Override
@@ -751,11 +790,10 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	 * raw drawing methods
 	 */
 	
-	public void drawCircle(int radius, int width)
+	public void drawCircle(int radius, int x, int y)
 	{
 		//set turtle to right
-		int saveDirection = direction;
-		direction = 90;
+		
 		//repaint();
 		//declare array lists to hold 8xquadrant data xcoords[8][data]
 		final int quadrants = 8;
@@ -769,13 +807,12 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 		//setTurtleSpeed(5);
 		Thread t = new Thread() //needs to be in a thread so system can update the display
 		{
-			int size = 5;
 			public void run() 
 			{
 				int count = 0;
 				int gd=0, gm; //,h,k,r;  
 				double xd,yd,x2;  
-				int h=xPos, k=yPos, r=radius;  
+				int h= x, k= y, r=radius;  
 				xd=0;
 				yd=r;  
 				x2 = r/Math.sqrt(2);  
@@ -856,7 +893,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 		};
 		t.start();
 		while(t.isAlive());
-		direction = saveDirection;
+		
 	}
 	
 	/**
@@ -1052,7 +1089,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 				xPos = panelWidth/2;
 				yPos = panelHeight/2;
 				penDown = false;
-				direction = 180; //down
+				direction = 90; //right
 
 				//JPanel panel = new JPanel();
 				
@@ -1096,7 +1133,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 				setSize(panelWidth, panelHeight);
 				setVisible(true);
 				revalidate();
-				//clear();
+				repaint();
 			
 	}
 
