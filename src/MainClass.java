@@ -22,7 +22,7 @@ public class MainClass extends LBUGraphics{
          MainFrame.setVisible(true);                         //now display it
                                                                    //call the TurtleGraphics about method to display version information.
 		setStroke(1,false);
-		//about();
+		about();
 		/*setStroke(1,true);
 		penDown();
 		forward(200);

@@ -134,7 +134,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	/**
 	 * delay for turtle animation
 	 */
-	protected int sleepPeriod=2; //delay for turtle animation
+	protected int sleepPeriod=1; //delay for turtle animation
 
 	/**
 	 * must be implemented in your class so that TurtleGraohics can call your code when something happens at the LBUGraphics GUI (i.e. user presses return in text field or clicks ok button).
@@ -338,59 +338,37 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 				Color savePen = PenColour; //save drawing pen
 				boolean savePendown = penDown;
 				penDown();
-				//brasenhamLine(500,300,150,100,true);
-				//bresenham(500,300,100,100);
-				//turnRight(180);
-				//turnLeft(180);
-				//drawCircle(100,1);
 				
-				for(int i=0; i<10; i++)
-				{
-					forward(50+(i*2));
-					turnRight();
-					forward(50+(i*2));
-					turnRight();
-					forward(50+(i*2));
-					turnRight();
-					forward(50+(i*2));
-					forward(50+(i*2));
-					turnRight(45);
-					forward(50+(i*2));
-					turnRight(45);
-					forward(50+(i*2));
-					turnRight(45);
-					sleepPeriod = 1;
-					forward(50+(i*2));
-					forward(50+(i*2));
-					turnRight(45);
-					forward(50+(i*2));
-					turnRight(45);
-					forward(50+(i*2));
-					turnRight(45);
-					forward(50+(i*2));
-					penUp();
-					forward(5);
-					turnLeft();
-					forward(5);
-					turnRight();
-					turnRight();
-					penDown();
-					sleepPeriod = 1;
-					if (i%2 == 0)
-						PenColour = Color.YELLOW;
-					else
-						PenColour = Color.RED;
-					//drawCircle();
-				}
-
+				penSize=5;
+				circle(50);
+				penUp();
+				turnLeft(90);
+				forward(150);
+				penDown();
+				circle(50);
+				penUp();
+				forward(100);
+				penUp();
+				turnLeft(90);
+				forward(50);
+				penDown();
+				turnRight(180);
+				forward(100);
+				turnLeft(180);
+				penUp();
+				forward(75);
+				turnRight(90);
+				forward(25);
+				circle(25);
+				penUp();
+				forward(100);
+				turnRight(360);
+				
 				PenColour = Color.GREEN;
 				
 				g.drawString("LBUGraphics Version "+VERSION,250,250);
-				turnRight(359);
-				/*penUp();
-				forward(100);
-				for(int i = 0; i<360; i++)
-					turnRight(10);*/
+				penSize=1;
+		
 				penDown = savePendown;
 				PenColour = savePen; //restore pen
 				sleepPeriod = saveSleep;
@@ -550,7 +528,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	}
 	
 	/**
-	 * rotate the turtle from its current rotation to the desired angle in the shortest direction, showing the animation
+	 * rotate the turtle from its current rotation to the desired, absolute angle in the shortest direction, showing the animation
 	 * @param degrees
 	 */
 	public void pointTurtle(int degrees)
@@ -568,7 +546,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 			rot*=-1;	//make positive
 			turnLeft(rot);
 		}
-			else
+		else
 			turnRight(rot);
 	}
 	/**
@@ -598,12 +576,8 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 		 double x2 = x1 + (Math.cos(angle) * distance);
 		 double y2 = y1 + (Math.sin(angle) * distance);
 		
-		// if (penDown)
-		//	{
-			 	bresenham(xPos, yPos, (int)x2,(int) y2);
-				//drawLine(PenColour, xPos, yPos, (int)x2,(int) y2);
-		//	}
-			//now robot has moved to the new position
+		bresenham(xPos, yPos, (int)x2,(int) y2);		//move the turtle point by point
+		//now robot has moved to the new position
 		xPos = (int)x2;
 		yPos = (int)y2;
 			
@@ -611,8 +585,6 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 				Thread.sleep(sleepPeriod);
 		} catch (InterruptedException e)
 		{
-				// TODO Auto-generated catch block
-				System.out.println("exception ****** "+e);
 		} 
 	}
 
@@ -647,14 +619,11 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 		final AffineTransformOp rotateOp = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
 		turtleDisplay = rotateOp.filter(turtle0,turtleDisplay);
 		
-		//repaint();
-
-		
 	}
 	
 	
 	/**
-	 * unimplemented circle command
+	 * draws a circle 
 	 * @param radius radius of the circle to draw
 	 * 
 	 */
@@ -672,7 +641,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 		penDown = savePendown;
 		xPos = savex;
 		yPos = savey;
-		drawCircle(radius, xPos, yPos);  // radius because turtle has animated to edge of circle
+		drawCircle(radius, xPos, yPos);  
 		//move turtle back
 		pointTurtle(180);
 		penUp();
@@ -681,7 +650,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 		direction = saveDirection;
 	}
 	
-//	@Override
+	@Override
 	/**
 	 * overridden paintComponent method to handle image updating (do not call directly, use repaint();)
 	 */
@@ -790,17 +759,23 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	 * raw drawing methods
 	 */
 	
+	/**
+	 * draw a circle using the polynomial method to give access to each pixel, turtle is updated in a thread
+	 * @param radius
+	 * @param x
+	 * @param y
+	 */
+	
 	public void drawCircle(int radius, int x, int y)
 	{
 		//set turtle to right
 		
-		//repaint();
-		//declare array lists to hold 8xquadrant data xcoords[8][data]
-		final int quadrants = 8;
-		ArrayList<ArrayList<Integer>> xcoords = new ArrayList<>(quadrants);
-		ArrayList<ArrayList<Integer>> ycoords = new ArrayList<>(quadrants);
+		//declare array lists to hold 8xoctant data xcoords[8][data]
+		final int octants = 8;
+		ArrayList<ArrayList<Integer>> xcoords = new ArrayList<>(octants);
+		ArrayList<ArrayList<Integer>> ycoords = new ArrayList<>(octants);
 		//initialise multi-dimensional arraylists
-		for(int i=0; i < quadrants; i++) {
+		for(int i=0; i < octants; i++) {
 		    xcoords.add(new ArrayList<Integer>());
 		    ycoords.add(new ArrayList<Integer>());
 		}
@@ -809,6 +784,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 		{
 			public void run() 
 			{
+				
 				int count = 0;
 				int gd=0, gm; //,h,k,r;  
 				double xd,yd,x2;  
@@ -848,20 +824,21 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 					ycoords.get(5).add(x+k);
 					xd += 1;  
 					count++;
+					
 				} 
 				//calculate number of rotations
-				int rotations = xcoords.get(0).size() * 8; //plots per quadrants x quadrants
+				int rotations = xcoords.get(0).size() * 8; //plots per octants x octants
 				int round = (Math.round(rotations/360)) + 1;
 				
 				//System.out.println(rotations+ " rotations for radius "+radius+". Rotate every "+round);
-				//calculated 8 quads now plot them in order
+				//calculated 8 octs now plot them in order
 				int plots = xcoords.get(0).size(); //the number of plots in this circle
 				for(int i=0; i<8; i++)
 				{
 					int start = 0;
 					int end = count-1;
 					int step = 1;
-					if(i % 2 == 1 )		//some quads are calculated in the opposite direction (for drawing)
+					if(i % 2 == 1 )		//some octs are calculated in the opposite direction (for drawing)
 					{
 						start = count-1;
 						end = 0;
@@ -878,14 +855,15 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 						//turn the turtle a bit for each plot
 						if(j % round == 0)
 							direction++;
-						drawLine(PenColour, xcoords.get(i).get(j), ycoords.get(i).get(j), xcoords.get(i).get(j)+penSize, ycoords.get(i).get(j));//[i][j], ys[i][j],  xs[i][j]+10, ys[i][j]+10); 
-					   try {
+						drawLine(PenColour, xcoords.get(i).get(j) , ycoords.get(i).get(j) , xcoords.get(i).get(j)+penSize, ycoords.get(i).get(j));//[i][j], ys[i][j],  xs[i][j]+10, ys[i][j]+10); 
+					   //spiral++;
+						try {
 							Thread.sleep(sleepPeriod);
 						} catch (InterruptedException e) {
 							
 						} //wait until drawing finished.
-					   xPos = xcoords.get(i).get(j);//xs[i][j];
-					   yPos = ycoords.get(i).get(j);//ys[i][j];
+					   xPos = xcoords.get(i).get(j);
+					   yPos = ycoords.get(i).get(j);
 					   repaint();
 					}
 				}
