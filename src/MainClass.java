@@ -22,6 +22,7 @@ public class MainClass extends LBUGraphics{
          MainFrame.setVisible(true);                         //now display it
                                                                    //call the TurtleGraphics about method to display version information.
 		setStroke(1,false);
+		//circle(150);
 		about();
 		penDown();
 		
@@ -33,7 +34,7 @@ public class MainClass extends LBUGraphics{
 	{
 		String[] params = command.split(" ");
 		command = params[0];
-		
+		cycleColours();
 		if (command.equalsIgnoreCase("forward"))
 			forward(200);
 		if (command.equalsIgnoreCase("circle"))
