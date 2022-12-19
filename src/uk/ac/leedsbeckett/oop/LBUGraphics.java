@@ -15,6 +15,9 @@ import java.awt.event.ActionListener;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBuffer;
+import java.awt.image.IndexColorModel;
+import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
 
@@ -104,10 +107,34 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	 * image is the drawing area and turtleImage is for the graphical representation of the turtle/pen
 	 */
 	private BufferedImage image, turtleDisplay, turtle0;
+	//index colour model, palette of 16 RGB colours with no alpha (so 3 elements, 4 bits - 16 colours)
+
+	private IndexColorModel colourModel; // = new IndexColorModel(4,16,red, green, blue); //palette image
+	WritableRaster raster; 		//actual array of pixels.
+	//colour palette for indexed colour image
+	int[] colors = {
+		    0x000000, // Black
+		    0x000080, // Navy
+		    0x008000, // Green
+		    0x008080, // Teal
+		    0x800000, // Maroon
+		    0x800080, // Purple
+		    0x808000, // Olive
+		    0xC0C0C0, // Silver
+		    0x808080, // Gray
+		    0x0000FF, // Blue
+		    0x00FF00, // Lime
+		    0x00FFFF, // Aqua
+		    0xFF0000, // Red
+		    0xFF00FF, // Fuchsia
+		    0xFFFF00, // Yellow
+		    0xFFFFFF  // White
+		};
 	
 	/**
 	 * Colour of the pen the turtle draws with (A Java Color)
 	 */
+	protected int Colour = 15; //indexed pallette colour to draw in
 	protected Color PenColour = Color.RED;
 	protected int penSize = 1; //used for raw drawing
 	
@@ -703,7 +730,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	{
 		panelHeight = ySize;
 		panelWidth = xSize;
-		image = new BufferedImage(panelWidth, panelHeight, BufferedImage.TYPE_INT_RGB);
+		///image = new BufferedImage(panelWidth, panelHeight, BufferedImage.TYPE_INT_RGB);
 		setPreferredSize(new Dimension(panelWidth, panelHeight));
 		clear();
 	}
@@ -855,7 +882,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 						//turn the turtle a bit for each plot
 						if(j % round == 0)
 							direction++;
-						drawLine(PenColour, xcoords.get(i).get(j) , ycoords.get(i).get(j) , xcoords.get(i).get(j)+penSize, ycoords.get(i).get(j));//[i][j], ys[i][j],  xs[i][j]+10, ys[i][j]+10); 
+						setPixel(xcoords.get(i).get(j),ycoords.get(i).get(j), Colour, raster);//drawLine(PenColour, xcoords.get(i).get(j) , ycoords.get(i).get(j) , xcoords.get(i).get(j)+penSize, ycoords.get(i).get(j));//[i][j], ys[i][j],  xs[i][j]+10, ys[i][j]+10); 
 					   //spiral++;
 						try {
 							Thread.sleep(sleepPeriod);
@@ -903,8 +930,10 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 			            for(int x = x1; x < x2; x++) 
 			            {
 			            	sleepThread(x, y);
-			            	if (penDown) drawLine(PenColour, x, y, x + penSize, y + penSize);
-			                error = error + 2 * dy;
+			            	if (penDown)
+			            		setPixel(x,y, Colour, raster);//drawLine(PenColour, x, y, x + penSize, y + penSize);
+			                
+			            		error = error + 2 * dy;
 			                if (error >= 0) {
 			                    y++;
 			                    error = error - 2 * dx;
@@ -918,7 +947,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 			            for(int y = y1; y < y2; y++) 
 			            {
 			            	sleepThread(x, y);
-			            	if (penDown) drawLine(PenColour, x, y, x + penSize, y + penSize);
+			            	if (penDown) setPixel(x,y, Colour, raster);//drawLine(PenColour, x, y, x + penSize, y + penSize);
 			                error = error + 2 * dx;
 			                if (error >= 0) {
 			                    x++;
@@ -937,7 +966,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 			            for(int x = x1; x > x2; x--) 
 			            {
 			            	sleepThread(x, y);
-			            	if (penDown) drawLine(PenColour, x, y, x + penSize, y + penSize);
+			            	if (penDown) setPixel(x,y, Colour, raster);//drawLine(PenColour, x, y, x + penSize, y + penSize);
 			                error = error + 2 * dy;
 			                if (error >= 0) {
 			                    y++;
@@ -952,7 +981,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 			            for(int y = y1; y < y2; y++) 
 			            {
 			            	sleepThread(x, y);
-			            	if (penDown) drawLine(PenColour, x, y, x + penSize, y + penSize);
+			            	if (penDown) setPixel(x,y, Colour, raster);//drawLine(PenColour, x, y, x + penSize, y + penSize);
 			                error = error - 2 * dx;
 			                if (error >= 0) 
 			                {
@@ -972,7 +1001,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 			            for(int x = x1; x > x2; x--) 
 			            {
 			            	sleepThread(x, y);
-			            	if (penDown) drawLine(PenColour, x, y, x + penSize, y + penSize);
+			            	if (penDown) setPixel(x,y, Colour, raster);//drawLine(PenColour, x, y, x + penSize, y + penSize);
 			                error = error - 2 * dy;
 			                if (error >= 0) {
 			                    y--;
@@ -987,7 +1016,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 			            for(int y = y1; y > y2; y--) 
 			            {
 			            	sleepThread(x, y);
-			            	if (penDown) drawLine(PenColour, x, y, x + penSize, y + penSize);
+			            	if (penDown) setPixel(x,y, Colour, raster);//drawLine(PenColour, x, y, x + penSize, y + penSize);
 			                error = error - 2 * dx;
 			                if (error >= 0) 
 			                {
@@ -1007,7 +1036,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 			            for(int y = y1; y > y2; y--) 
 			            {
 			            	sleepThread(x, y);
-			            	if (penDown) drawLine(PenColour, x, y, x + penSize, y + penSize);
+			            	if (penDown) setPixel(x,y, Colour, raster);//drawLine(PenColour, x, y, x + penSize, y + penSize);
 			                error = error + 2 * dx;
 			                if (error >= 0) {
 			                    x++;
@@ -1022,7 +1051,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 			            for(int x = x1; x < x2; x++) 
 			            {
 			            	sleepThread(x, y);
-			            	if (penDown) drawLine(PenColour, x, y, x + penSize, y + penSize);
+			            	if (penDown) setPixel(x,y, Colour, raster);//drawLine(PenColour, x, y, x + penSize, y + penSize);
 			                error = error - 2 * dy;
 			                if (error >= 0) {
 			                    y--;
@@ -1037,6 +1066,19 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 		while(t.isAlive());
 	}
 
+	/**
+	 * 
+	 * @param x
+	 * @param y
+	 * @param colour
+	 * @param raster
+	 */
+	public void setPixel(int x, int y, int colour, WritableRaster raster)
+	{
+		
+		for(int i=0; i<penSize; i++)
+			raster.setSample(x+i, y+i, 0, colour);  //0 is the band
+	}
 	/**
 	 * sleep the thread and update the turtle xPos and yPos (if positive) and repaint the display
 	 * @param x
@@ -1063,6 +1105,29 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	
 	public LBUGraphics()
 	{
+		//make palette
+	/*	makeColour(0,Color.BLACK);
+		makeColour(0,Color.WHITE);
+		makeColour(0,Color.RED);
+		makeColour(0,Color.GREEN);
+		makeColour(0,Color.BLUE);
+		makeColour(0,Color.YELLOW);
+		makeColour(0,Color.ORANGE);
+		makeColour(0,Color.CYAN);
+		makeColour(0,Color.MAGENTA);
+		makeColour(0,Color.PINK);
+		makeColour(0,Color.BLACK);
+		makeColour(0,Color.BLACK);
+		makeColour(0,Color.BLACK);
+		makeColour(0,Color.LIGHT_GRAY);
+		makeColour(0,Color.GRAY);
+		makeColour(0,Color.DARK_GRAY);*/
+		//Make index colour palette
+		colourModel = new IndexColorModel(4, 16, colors, 0, false, -1, DataBuffer.TYPE_BYTE); 
+		image = new BufferedImage(panelWidth, panelHeight, BufferedImage.TYPE_BYTE_INDEXED, colourModel);
+		raster = image.getRaster();
+		
+		
 		//set default turtle state
 				xPos = panelWidth/2;
 				yPos = panelHeight/2;
@@ -1092,7 +1157,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 				add(messages);
 				messages.setVisible(true);
 				//main drawing area
-				image = new BufferedImage(panelWidth, panelHeight, BufferedImage.TYPE_INT_RGB);
+				///image = new BufferedImage(panelWidth, panelHeight, BufferedImage.TYPE_BYTE_INDEXED);//TYPE_INT_RGB);
 				
 				//small image to display on top of drawing area to represent the turtle
 				
@@ -1114,8 +1179,64 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 				repaint();
 			
 	}
+	
+	/*
+	public void imag()
+	{
+	BufferedImage indexedImage = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_INDEXED);
 
+	// Set the color palette for the indexed image
+	IndexColorModel cm = createColorModel();
+	indexedImage.setColorModel(cm);
 
+	// Set the pixels for the indexed image
+	int[] pixels = createPixelArray();
+	indexedImage.setRGB(0, 0, width, height, pixels, 0, width);
+	}
+	private void makeColour(int palettePos, Color colour)
+	{
+		red[palettePos] = (byte) colour.getRed();
+		green[palettePos] = (byte) colour.getGreen();
+		blue[palettePos] = (byte) colour.getBlue();
+	}
+	
+	public IndexColorModel createColorModel() {
+	    // Define the colors in the palette
+	    byte[] r = new byte[256];
+	    byte[] g = new byte[256];
+	    byte[] b = new byte[256];
+
+	    // Set the colors in the palette
+	    for (int i = 0; i < 256; i++) {
+	        r[i] = (byte) i;
+	        g[i] = (byte) (255 - i);
+	        b[i] = (byte) (i / 2);
+	    }
+
+	    // Create the color model
+	    return new IndexColorModel(8, 256, r, g, b);
+	}
+	public int[] createPixelArray() {
+	    int width = 100;
+	    int height = 100;
+
+	    // Create the pixel array
+	    int[] pixels = new int[width * height];
+
+	    // Set the pixels in the array
+	    for (int y = 0; y < height; y++) {
+	        for (int x = 0; x < width; x++) {
+	            // Calculate the index of the current pixel
+	            int i = y * width + x;
+
+	            // Set the pixel to a gradient color
+	            pixels[i] = (x / (width / 256)) + (y / (height / 256));
+	        }
+	    }
+
+	    return pixels;
+	}
+*/
 	/**
 	 * implemented abstract method from ActionListener interface.
 	 * Reads text from commandLine JTextField and calls abstract method processCommand()
