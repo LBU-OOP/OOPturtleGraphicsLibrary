@@ -366,9 +366,11 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 				Color savePen = PenColour; //save drawing pen
 				boolean savePendown = penDown;
 				penDown();
+				//circle(50);
+				//floodfill(raster, 0, 12, xPos,yPos);
 				
 				penSize=5;
-				Colour = 2;
+				Colour = 12;
 				circle(50);
 				penUp();
 				turnLeft(90);
@@ -376,10 +378,11 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 				penDown();
 				Colour = 9;
 				circle(50);
+				floodfill(raster, 0, 14, xPos,yPos);
 				penUp();
 				forward(100);
 				penUp();
-				Colour = 12;
+				Colour = 2;
 				turnLeft(90);
 				forward(50);
 				penDown();
@@ -409,6 +412,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 					sleepThread(xPos,yPos);
 				}
 				sleepPeriod = saveSleep;
+				
 					repaint();
 			   
 			}
@@ -1090,6 +1094,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 		
 		for(int i=0; i<penSize; i++)
 			raster.setSample(x+i, y+i, 0, colour);  //0 is the band
+		
 	}
 	
 	public void cycleColours()
@@ -1103,6 +1108,51 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 		colors[1] = lastCol;
 		repaint();
 	}
+	
+	/**
+	 * 
+	 * @param picture raster map of pixels
+	 * @param colorToReplace
+	 * @param colorToPaint
+	 * @param x
+	 * @param y
+	 */
+	 public void floodfill(WritableRaster picture, int colorToReplace, int colorToPaint, int x, int y) {
+		    validatePicture(picture);
+		    int pixels[] = new int[4];
+		    raster.getPixel(x, y, pixels);
+		    int currentColor = pixels[0];//getValueAt(picture, x, y);
+		    if (currentColor == colorToReplace) 
+		    {
+		      raster.setSample(x, y, 0, colorToPaint);//picture[x][y] = colorToPaint;
+		      floodfill(picture, colorToReplace, colorToPaint, x + 1, y);
+		      floodfill(picture, colorToReplace, colorToPaint, x - 1, y);
+		      floodfill(picture, colorToReplace, colorToPaint, x, y + 1);
+		      floodfill(picture, colorToReplace, colorToPaint, x, y - 1);
+		    }
+		    repaint();
+		    
+	 }
+
+		  private void validatePicture(WritableRaster picture) {
+		    if (picture == null) {
+		      throw new IllegalArgumentException("You can't pass a null instance as picture");
+		    }
+		  }
+
+		  /**
+		   * Method created to avoid IndexOutOfBoundExceptions. This method return -1 if you try to access
+		   * an invalid position.
+		   */
+		  private static int getValueAt(int[][] picture, int x, int y) {
+		    if (x < 0 || y < 0 || x > picture.length || y > picture[x].length) {
+		      return -1;
+		    } else {
+		      return picture[x][y];
+		    }
+		  }
+	/*=========end flood fill========*/
+	
 	/**
 	 * sleep the thread and update the turtle xPos and yPos (if positive) and repaint the display
 	 * @param x
