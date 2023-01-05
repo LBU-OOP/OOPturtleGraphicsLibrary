@@ -569,7 +569,8 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	
 	/**
 	 * rotate the turtle from its current rotation to the desired, absolute angle in the shortest direction, showing the animation
-	 * @param degrees
+	 * @param degrees rotation amount
+	 * 
 	 */
 	public void pointTurtle(int degrees)
 	{
@@ -689,7 +690,16 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 		penDown = savePendown;
 		direction = saveDirection;
 	}
-	
+	/**
+	 * Perform a flood fill operation at the current turtle position
+	 */
+	public void fill()
+	{
+		int pixels[] = new int[4];
+		raster.getPixel(xPos, yPos, pixels); //get colour at turtle as colour to fill
+		int currentColor = pixels[0];
+		floodfill(raster, currentColor, Colour, xPos,yPos);
+	}
 	@Override
 	/**
 	 * overridden paintComponent method to handle image updating (do not call directly, use repaint();)
@@ -766,9 +776,6 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	 */
 	public void reset()
 	{
-		//System.out.println("xpos,ypos="+panelWidth+","+panelHeight);
-		//System.out.println("xpos,ypos="+xPos+","+yPos);
-		//set default turtle state
 		xPos = TURTLESTARTX/2;
 		yPos =  TURTLESTARTY/2;
 		penDown = false;
@@ -803,9 +810,9 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	
 	/**
 	 * draw a circle using the polynomial method to give access to each pixel, turtle is updated in a thread
-	 * @param radius
-	 * @param x
-	 * @param y
+	 * @param radius circlue radius
+	 * @param x circle x position
+	 * @param y circle y position
 	 */
 	
 	public void drawCircle(int radius, int x, int y)
@@ -872,7 +879,6 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 				int rotations = xcoords.get(0).size() * 8; //plots per octants x octants
 				int round = (Math.round(rotations/360)) + 1;
 				
-				//System.out.println(rotations+ " rotations for radius "+radius+". Rotate every "+round);
 				//calculated 8 octs now plot them in order
 				int plots = xcoords.get(0).size(); //the number of plots in this circle
 				for(int i=0; i<8; i++)
@@ -1083,20 +1089,27 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	}
 
 	/**
-	 * sets a pixel and adjacent pixels, according to the global penSize in the oassed raster of the passed colour
-	 * @param x
-	 * @param y
-	 * @param colour
-	 * @param raster
+	 * sets a pixel and adjacent pixels, according to the global penSize in the passed raster of the passed colour
+	 * @param x position of pixel
+	 * @param y position of pixel
+	 * @param colour palate number
+	 * @param raster raster of pixels to set
+	 * 
 	 */
-	public void setPixel(int x, int y, int colour, WritableRaster raster)
+	public void setPixel(int x, int y, int colour, WritableRaster raster) 
 	{
-		
+		if(x>=panelWidth)  
+			x=0;
+		if (y>=panelHeight)
+			y=0;
 		for(int i=0; i<penSize; i++)
 			raster.setSample(x+i, y+i, 0, colour);  //0 is the band
 		
 	}
 	
+	/**
+	 * Cycle the full colour palette
+	 */
 	public void cycleColours()
 	{
 		int lastCol = colors[15];
@@ -1117,11 +1130,14 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	 * @param x
 	 * @param y
 	 */
-	 public void floodfill(WritableRaster picture, int colorToReplace, int colorToPaint, int x, int y) {
+	 public void floodfill(WritableRaster picture, int colorToReplace, int colorToPaint, int x, int y) 
+	 {
 		    validatePicture(picture);
+		    if(x<2 || y<2 || x > panelWidth-1 || y> panelHeight-1)
+		    	return;
 		    int pixels[] = new int[4];
 		    raster.getPixel(x, y, pixels);
-		    int currentColor = pixels[0];//getValueAt(picture, x, y);
+		    int currentColor = pixels[0];
 		    if (currentColor == colorToReplace) 
 		    {
 		      raster.setSample(x, y, 0, colorToPaint);//picture[x][y] = colorToPaint;
@@ -1130,11 +1146,12 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 		      floodfill(picture, colorToReplace, colorToPaint, x, y + 1);
 		      floodfill(picture, colorToReplace, colorToPaint, x, y - 1);
 		    }
-		    repaint();
+		
 		    
 	 }
 
-		  private void validatePicture(WritableRaster picture) {
+		  private void validatePicture(WritableRaster picture) 
+		  {
 		    if (picture == null) {
 		      throw new IllegalArgumentException("You can't pass a null instance as picture");
 		    }
@@ -1144,10 +1161,13 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 		   * Method created to avoid IndexOutOfBoundExceptions. This method return -1 if you try to access
 		   * an invalid position.
 		   */
-		  private static int getValueAt(int[][] picture, int x, int y) {
-		    if (x < 0 || y < 0 || x > picture.length || y > picture[x].length) {
+		  private static int getValueAt(int[][] picture, int x, int y) 
+		  {
+		    if (x < 0 || y < 0 || x > picture.length || y > picture[x].length) 
+		    {
 		      return -1;
-		    } else {
+		    } else 
+		    {
 		      return picture[x][y];
 		    }
 		  }

@@ -34,7 +34,7 @@ public class MainClass extends LBUGraphics{
 	{
 		String[] params = command.split(" ");
 		command = params[0];
-		cycleColours();
+		//cycleColours();
 		if (command.equalsIgnoreCase("forward"))
 			forward(200);
 		if (command.equalsIgnoreCase("circle"))
@@ -49,6 +49,8 @@ public class MainClass extends LBUGraphics{
 			penUp();
 		if (command.equalsIgnoreCase("about"))
 			about();
+		if (command.equalsIgnoreCase("fill"))
+			fill();
 		if (command.equalsIgnoreCase("set"))
 		{
 			
