@@ -37,8 +37,9 @@ import javax.swing.JTextField;
  * Don't forget to look at the inherited methods from JPanel and above, which will also be if use.
  * 
  * @author Duncan Mullier
- * @version 3.1 
+ * @version 4.0 
  * All software has bugs, if you find one please report to author. Ensure you have the latest version
+ * V4.0 rewritten to have pixel by pixel animated turtle
  * V3.1 threaded about() now holds execution until it has completed, added stroke and graphics2d
  * V2.0 adds simple GUI interface, now an abstract class with CommandLineInterface Interface
  *<h2> example code </h2>
@@ -79,7 +80,7 @@ public class Main extends LBUGraphics
 }
 
 </pre>
-@since 1/2022
+@since 1/2023
  */
 @SuppressWarnings("serial")
 
@@ -1125,10 +1126,10 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	/**
 	 * 
 	 * @param picture raster map of pixels
-	 * @param colorToReplace
-	 * @param colorToPaint
-	 * @param x
-	 * @param y
+	 * @param colorToReplace colour of background to fill
+	 * @param colorToPaint colour to replace background with
+	 * @param x x position
+	 * @param y y position
 	 */
 	 public void floodfill(WritableRaster picture, int colorToReplace, int colorToPaint, int x, int y) 
 	 {
