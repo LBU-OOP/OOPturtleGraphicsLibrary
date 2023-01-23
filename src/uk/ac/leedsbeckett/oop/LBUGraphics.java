@@ -29,7 +29,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 /**
- * LBUGraphics
+ * LBUGraphics (Duncan Mullier, Leeds Beckett University)
  * extended JPanel with simple drawing commands and a visual representation of a turtle to perform "turtle graphics" drawing operations.
  * the jar file should be added to your build path.
  * right click on your project, select "Build Path-Add External Archive" and add jar file.
@@ -37,8 +37,9 @@ import javax.swing.JTextField;
  * Don't forget to look at the inherited methods from JPanel and above, which will also be if use.
  * 
  * @author Duncan Mullier
- * @version 4.0 
- * All software has bugs, if you find one please report to author. Ensure you have the latest version
+ * @version 4.1 
+ * <h1></h1>All software has bugs, if you find one please report to author. Ensure you have the latest version
+ * V4.1 January 2023 exception added for fill operation
  * V4.0 rewritten to have pixel by pixel animated turtle
  * V3.1 threaded about() now holds execution until it has completed, added stroke and graphics2d
  * V2.0 adds simple GUI interface, now an abstract class with CommandLineInterface Interface
@@ -63,11 +64,11 @@ public class Main extends LBUGraphics
 	public Main()
 	{
 		JFrame MainFrame = new JFrame();		//create a frame to display the turtle panel on
-	    MainFrame.setLayout(new FlowLayout()); 	//not strictly necessary
-	    MainFrame.add(this);					//"this" is this object that extends turtle graphics so we are adding a turtle graphics panel to the frame
-	    MainFrame.pack();						//set the frame to a size we can see
-	    MainFrame.setVisible(true);				//now display it
-	    about();								//call the LBUGraphics about method to display version information.
+		MainFrame.setLayout(new FlowLayout());	//not strictly necessary
+		MainFrame.add(this);					//"this" is this object that extends turtle graphics so we are adding a turtle graphics panel to the frame
+		MainFrame.pack();						//set the frame to a size we can see
+		MainFrame.setVisible(true);				//now display it
+		about();								//call the LBUGraphics about method to display version information.
 	}
 
 	
@@ -93,7 +94,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	public final float VERSION = 4.0f; 
 	private  Color background_Col = Color.DARK_GRAY;
 	private final static int TURTLE_X_SIZE = 72, TURTLE_Y_SIZE = 69;
-	private final int TURTLESTARTX = 1000, TURTLESTARTY = 400;
+	private final int TURTLESTARTX = 600, TURTLESTARTY = 400;
 	private  int panelWidth = TURTLESTARTX;
 	private  int panelHeight = TURTLESTARTY;
 	private float StrokeWidth = 1;
@@ -166,7 +167,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	protected int turtleSpeed = 1; //speed for turtle animation
 
 	/**
-	 * must be implemented in your class so that TurtleGraohics can call your code when something happens at the LBUGraphics GUI (i.e. user presses return in text field or clicks ok button).
+	 * must be implemented in your class so that TurtleGraphics can call your code when something happens at the LBUGraphics GUI (i.e. user presses return in text field or clicks ok button).
 	 * If you do not implement this method you will get a syntax error.
 	 * @param command is the String typed into the text field before return was pressed or ok was clicked.
 	 */
@@ -367,9 +368,6 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 				Color savePen = PenColour; //save drawing pen
 				boolean savePendown = penDown;
 				penDown();
-				//circle(50);
-				//floodfill(raster, 0, 12, xPos,yPos);
-				
 				penSize=5;
 				Colour = 12;
 				circle(50);
@@ -692,14 +690,24 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 		direction = saveDirection;
 	}
 	/**
-	 * Perform a flood fill operation at the current turtle position
+	 * Perform a flood fill operation at the current turtle position, needs to be surounded by a graphical area or exception is thrown
+	 * @throws Exception when fill area is too big
 	 */
-	public void fill()
+	public void fill() throws Exception
 	{
-		int pixels[] = new int[4];
-		raster.getPixel(xPos, yPos, pixels); //get colour at turtle as colour to fill
-		int currentColor = pixels[0];
-		floodfill(raster, currentColor, Colour, xPos,yPos);
+		try
+		{
+			int pixels[] = new int[4];
+			System.out.println(xPos+"    "+yPos);
+			raster.getPixel(xPos, yPos, pixels); //get colour at turtle as colour to fill
+			int currentColor = pixels[0];
+			floodfill(raster, 0, 14, xPos,yPos);
+		}
+		catch(java.lang.StackOverflowError e)
+		{
+			throw new Exception("Fill area too big");
+		}
+		//floodfill(raster, currentColor, Colour, xPos,yPos);
 	}
 	@Override
 	/**
@@ -1139,6 +1147,8 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 		    int pixels[] = new int[4];
 		    raster.getPixel(x, y, pixels);
 		    int currentColor = pixels[0];
+		    if (currentColor == colorToPaint)
+		    	return;
 		    if (currentColor == colorToReplace) 
 		    {
 		      raster.setSample(x, y, 0, colorToPaint);//picture[x][y] = colorToPaint;
@@ -1148,7 +1158,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 		      floodfill(picture, colorToReplace, colorToPaint, x, y - 1);
 		    }
 		
-		    
+		  //repaint(); 
 	 }
 
 		  private void validatePicture(WritableRaster picture) 
