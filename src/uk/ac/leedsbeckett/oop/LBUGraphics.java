@@ -38,7 +38,8 @@ import javax.swing.JTextField;
  * 
  * @author Duncan Mullier
  * @version 4.1 
- * <h1></h1>All software has bugs, if you find one please report to author. Ensure you have the latest version
+ * 
+ * All software has bugs, if you find one please report to author. Ensure you have the latest version
  * V4.1 January 2023 exception added for fill operation
  * V4.0 rewritten to have pixel by pixel animated turtle
  * V3.1 threaded about() now holds execution until it has completed, added stroke and graphics2d
