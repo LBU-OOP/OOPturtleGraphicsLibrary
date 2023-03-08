@@ -37,9 +37,10 @@ import javax.swing.JTextField;
  * Don't forget to look at the inherited methods from JPanel and above, which will also be if use.
  * 
  * @author Duncan Mullier
- * @version 4.1 
+ * @version 4.2 
  * 
  * All software has bugs, if you find one please report to author. Ensure you have the latest version
+ * V4.2 fixed bugs -no animation with turn without integer and setPenColour not working fixed>
  * V4.1 January 2023 exception added for fill operation
  * V4.0 rewritten to have pixel by pixel animated turtle
  * V3.1 threaded about() now holds execution until it has completed, added stroke and graphics2d
@@ -92,7 +93,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	/**
 	 * public version number.
 	 */
-	public final float VERSION = 4.0f; 
+	public final float VERSION = 4.2f; 
 	private  Color background_Col = Color.DARK_GRAY;
 	private final static int TURTLE_X_SIZE = 72, TURTLE_Y_SIZE = 69;
 	private final int TURTLESTARTX = 600, TURTLESTARTY = 400;
@@ -239,11 +240,11 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	
 	/**
 	 * getPenColour returns the colour that the turtle draws in
-	 * @return Color PenColour
+	 * @return int pallette index
 	 */
-	public Color getPenColour()
+	public int getPenColour()
 	{
-		return PenColour;
+		return Colour;
 	}
 	
 	/**
@@ -272,11 +273,27 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	
 	/**
 	 * setPenColour sets the colour that the turtle will draw in
-	 * @param col Java Color
+	 * @param col palette index
+	 * 	0 0x000000, // Black
+		1    0x000080, // Navy
+		2    0x008000, // Green
+		3    0x008080, // Teal
+		4   0x800000, // Maroon
+		5    0x800080, // Purple
+		6   0x808000, // Olive
+		7    0xC0C0C0, // Silver
+		8   0x808080, // Gray
+		9   0x0000FF, // Blue
+		10   0x00FF00, // Lime
+		11   0x00FFFF, // Aqua
+		12    0xFF0000, // Red
+		13    0xFF00FF, // Fuchsia
+		14    0xFFFF00, // Yellow
+		15    0xFFFFFF  // White
 	 */
-	public void setPenColour(Color col)
+	public void setPenColour(int col)
 	{
-		PenColour = col;
+		Colour = col;
 	}
 	
 	/**
@@ -465,10 +482,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	 */
 	public void turnRight()
 	{
-		direction +=90;
-		if (direction >= 360)
-			direction = 0;
-		repaint();
+		turnRight(90);
 	}
 	
 	/**
@@ -526,10 +540,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	 */
 	public void turnLeft()
 	{
-		direction -=90;
-		if (direction < 0)
-			direction = 270;
-		repaint();
+		turnLeft(90);
 	}
 	
 	/**
@@ -961,6 +972,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 			            int y = y1;
 			            for(int x = x1; x < x2; x++) 
 			            {
+			            	
 			            	sleepThread(x, y);
 			            	if (penDown)
 			            		setPixel(x,y, Colour, raster);//drawLine(PenColour, x, y, x + penSize, y + penSize);
@@ -997,7 +1009,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 			            int y = y1;
 			            for(int x = x1; x > x2; x--) 
 			            {
-			            	//sleepThread(x, y);
+			            	sleepThread(x, y);
 			            	if (penDown) setPixel(x,y, Colour, raster);
 			                error = error + 2 * dy;
 			                if (error >= 0) {
@@ -1032,7 +1044,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 			            int y = y1;
 			            for(int x = x1; x > x2; x--) 
 			            {
-			            	//sleepThread(x, y);
+			            	sleepThread(x, y);
 			            	if (penDown) setPixel(x,y, Colour, raster);
 			                error = error - 2 * dy;
 			                if (error >= 0) {
@@ -1067,7 +1079,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 			            int x = x1;
 			            for(int y = y1; y > y2; y--) 
 			            {
-			            	//sleepThread(x, y);
+			            	sleepThread(x, y);
 			            	if (penDown) setPixel(x,y, Colour, raster);
 			                error = error + 2 * dx;
 			                if (error >= 0) {
@@ -1082,7 +1094,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 			            int y = y1;
 			            for(int x = x1; x < x2; x++) 
 			            {
-			            	//sleepThread(x, y, speed);
+			            	sleepThread(x, y);
 			            	if (penDown) setPixel(x,y, Colour, raster);
 			                error = error - 2 * dy;
 			                if (error >= 0) {
@@ -1092,6 +1104,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 			            }
 			        }
 			    }
+			    repaint();
 			}//run
 		};//thread
 		t.start();
@@ -1114,7 +1127,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 			y=0;
 		for(int i=0; i<penSize; i++)
 			raster.setSample(x+i, y+i, 0, colour);  //0 is the band
-		
+		repaint();
 	}
 	
 	/**
@@ -1192,6 +1205,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	 */
 	private void sleepThread(int x, int y)
 	{
+		
 		try {
 			Thread.sleep(sleepPeriod);
 		} catch (InterruptedException e) {}
