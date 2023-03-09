@@ -1156,7 +1156,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	 * @param colorToPaint colour to replace background with
 	 * @param x x position
 	 * @param y y position
-	 * @param UnsupportedOperationException 
+	 * 
 	 */
 	 public void floodfill(WritableRaster picture, int colorToReplace, int colorToPaint, int x, int y) 
 	 {
