@@ -37,9 +37,10 @@ import javax.swing.JTextField;
  * Don't forget to look at the inherited methods from JPanel and above, which will also be if use.
  * 
  * @author Duncan Mullier
- * @version 4.2 
+ * @version 4.3 
  * 
  * All software has bugs, if you find one please report to author. Ensure you have the latest version
+ * V4.3 change back to bitmap from index color model. 
  * V4.2 fixed bugs -no animation with turn without integer and setPenColour not working fixed>
  * V4.1 January 2023 exception added for fill operation
  * V4.0 rewritten to have pixel by pixel animated turtle
@@ -83,7 +84,7 @@ public class Main extends LBUGraphics
 }
 
 </pre>
-@since 1/2023
+@since 3/2023
  */
 @SuppressWarnings("serial")
 
@@ -93,7 +94,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	/**
 	 * public version number.
 	 */
-	public final float VERSION = 4.2f; 
+	public final float VERSION = 4.3f; 
 	private  Color background_Col = Color.DARK_GRAY;
 	private final static int TURTLE_X_SIZE = 72, TURTLE_Y_SIZE = 69;
 	private final int TURTLESTARTX = 600, TURTLESTARTY = 400;
@@ -200,6 +201,10 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 		
 	/**
 	 * returns the graphicsContext of the Turtle display so you can draw on it using the normal Java drawing methods
+	 * example
+	 * Graphics g = getGraphicsContext();
+	 *	g.setColor(Color.red);
+	 *	g.drawLine(0, 0, 250, 500);
 	 * @return graphics context
 	 */
 	public Graphics getGraphicsContext()
@@ -209,6 +214,10 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	
 	/**
 	 * returns the graphicsContext of the Turtle display so you can draw on it using the extended Graphics2Dl Java drawing methods
+	 * example
+	 * Graphics g = getGraphics2DContext();
+	 *	g.setColor(Color.red);
+	 *	g.drawLine(0, 0, 250, 500);
 	 * @return graphics context
 	 */
 	public Graphics2D getGraphics2DContext()
@@ -219,6 +228,10 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	
 	/**
 	 * return a BufferedImage of the display, so that it can be saved
+	 * example
+	 *  	BufferedImage bufImg = getBufferedImage(); 
+	 * 		Graphics g = bufImg.getGraphics();
+	 * 		g.drawLine(0,0,250,250);
 	 * @return BufferedImage of display
 	 */
 	public BufferedImage getBufferedImage()
@@ -240,32 +253,23 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	
 	/**
 	 * getPenColour returns the colour that the turtle draws in
-	 * @return int pallette index
+	 * @return java Color
 	 */
-	public int getPenColour()
+	public Color getPenColour()
 	{
-		return Colour;
+		return PenColour;
 	}
 	
 	/**
 	 * sets the width of the line drawn
 	 * @param strokeWidth integer representing the thickness of the line
-	 * @param dashed if true line will be dashed, solid if false
+	 *
 	 */
-	public void setStroke(int strokeWidth, boolean dashed)
+	public void setStroke(int strokeWidth)
 	{
-		float[] fa = {10, 10, 10};       // The dash pattern
-		if(dashed)
-		{
-		 
-		 Stroke = new BasicStroke(strokeWidth, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 10, fa, 10);
-		}
-		else
-		{
 			Stroke = new BasicStroke(strokeWidth);
-		}
-		this.StrokeWidth = strokeWidth;
-		
+			this.StrokeWidth = strokeWidth;
+	
 		Graphics2D g2 = (Graphics2D) image.getGraphics();
 		g2.setStroke(Stroke);
 		
@@ -291,9 +295,9 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 		14    0xFFFF00, // Yellow
 		15    0xFFFFFF  // White
 	 */
-	public void setPenColour(int col)
+	public void setPenColour(Color col)
 	{
-		Colour = col;
+		PenColour = col;
 	}
 	
 	/**
@@ -387,19 +391,19 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 				boolean savePendown = penDown;
 				penDown();
 				penSize=5;
-				Colour = 12;
+				setPenColour(Color.red);//Colour = 12;
 				circle(50);
 				penUp();
 				turnLeft(90);
 				forward(150);
 				penDown();
-				Colour = 9;
+				setPenColour(Color.green);//Colour = 9;
 				circle(50);
-				floodfill(raster, 0, 14, xPos,yPos);
+				//floodfill(raster, 0, 14, xPos,yPos);
 				penUp();
 				forward(100);
 				penUp();
-				Colour = 2;
+				setPenColour(Color.blue);//Colour = 2;
 				turnLeft(90);
 				forward(50);
 				penDown();
@@ -410,6 +414,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 				forward(75);
 				turnRight(90);
 				forward(25);
+				penDown();
 				circle(25);
 				penUp();
 				forward(100);
@@ -729,8 +734,8 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	{
 		setTurtleGraphicDirection();
 		// render the image on the panel.
-		colourModel = new IndexColorModel(4, 16, colors, 0, false, -1, DataBuffer.TYPE_BYTE); //create new colour model in case palate had been updated
-		image = new BufferedImage(colourModel, image.getRaster(), colourModel.isAlphaPremultiplied(), null);
+		///colourModel = new IndexColorModel(4, 16, colors, 0, false, -1, DataBuffer.TYPE_BYTE); //create new colour model in case palate had been updated
+		///image = new BufferedImage(colourModel, image.getRaster(), colourModel.isAlphaPremultiplied(), null);
 		g.drawImage(image, 0, 0, null);
 		g.drawImage(turtleDisplay, xPos-TURTLE_X_SIZE/2, yPos-TURTLE_Y_SIZE/2, null);
 		
@@ -802,7 +807,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 		penDown = false;
 		direction = 180; //down
 		repaint();
-		setStroke(1,false);
+		setStroke(1);
 		
 	}
 	
@@ -849,7 +854,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 		    xcoords.add(new ArrayList<Integer>());
 		    ycoords.add(new ArrayList<Integer>());
 		}
-		//setTurtleSpeed(5);
+		
 		Thread t = new Thread() //needs to be in a thread so system can update the display
 		{
 			public void run() 
@@ -975,7 +980,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 			            	
 			            	sleepThread(x, y);
 			            	if (penDown)
-			            		setPixel(x,y, Colour, raster);//drawLine(PenColour, x, y, x + penSize, y + penSize);
+			            		setPixel(x,y, Colour, raster);
 			                
 			            		error = error + 2 * dy;
 			                if (error >= 0) {
@@ -1125,9 +1130,8 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 			x=0;
 		if (y>=panelHeight)
 			y=0;
-		for(int i=0; i<penSize; i++)
-			raster.setSample(x+i, y+i, 0, colour);  //0 is the band
-		repaint();
+		if (penDown) drawLine(PenColour, x, y, x + penSize, y + penSize);
+
 	}
 	
 	/**
@@ -1146,33 +1150,17 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	}
 	
 	/**
-	 * 
+	 * unimplemented
 	 * @param picture raster map of pixels
 	 * @param colorToReplace colour of background to fill
 	 * @param colorToPaint colour to replace background with
 	 * @param x x position
 	 * @param y y position
+	 * @param UnsupportedOperationException 
 	 */
 	 public void floodfill(WritableRaster picture, int colorToReplace, int colorToPaint, int x, int y) 
 	 {
-		    validatePicture(picture);
-		    if(x<2 || y<2 || x > panelWidth-1 || y> panelHeight-1)
-		    	return;
-		    int pixels[] = new int[4];
-		    raster.getPixel(x, y, pixels);
-		    int currentColor = pixels[0];
-		    if (currentColor == colorToPaint)
-		    	return;
-		    if (currentColor == colorToReplace) 
-		    {
-		      raster.setSample(x, y, 0, colorToPaint);//picture[x][y] = colorToPaint;
-		      floodfill(picture, colorToReplace, colorToPaint, x + 1, y);
-		      floodfill(picture, colorToReplace, colorToPaint, x - 1, y);
-		      floodfill(picture, colorToReplace, colorToPaint, x, y + 1);
-		      floodfill(picture, colorToReplace, colorToPaint, x, y - 1);
-		    }
-		
-		  //repaint(); 
+		   throw  new java.lang.UnsupportedOperationException("not yet implemented flood fill");
 	 }
 
 		  private void validatePicture(WritableRaster picture) 
@@ -1229,7 +1217,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	
 		//Make index colour palette
 		colourModel = new IndexColorModel(4, 16, colors, 0, false, -1, DataBuffer.TYPE_BYTE); 
-		image = new BufferedImage(panelWidth, panelHeight, BufferedImage.TYPE_BYTE_INDEXED, colourModel);
+		image = new BufferedImage(panelWidth, panelHeight, BufferedImage.TYPE_INT_RGB);//image = new BufferedImage(panelWidth, panelHeight, BufferedImage.TYPE_BYTE_INDEXED, colourModel);
 		raster = image.getRaster();
 		
 		
