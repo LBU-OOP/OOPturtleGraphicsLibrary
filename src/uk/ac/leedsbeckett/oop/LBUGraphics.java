@@ -31,15 +31,21 @@ import javax.swing.JTextField;
 /**
  * LBUGraphics (Duncan Mullier, Leeds Beckett University)
  * extended JPanel with simple drawing commands and a visual representation of a turtle to perform "turtle graphics" drawing operations.
- * the jar file should be added to your build path.
- * right click on your project, select "Build Path-Add External Archive" and add jar file.
- * It will appear in your project explorer under "referenced libraries", inside the jar will be LBUGraphics.class
+ * <h2>Adding the Jar File</h2>
+ * The jar file should be added to your build path. You must have created a project and be in the package explorer view if you don't see it (Window->Show View->Package Explorer)
+ * Right click on your project, select "Build Path-Add External Archive" and add jar file.
+ * It will appear in your project explorer under "referenced libraries", inside the jar will be LBUGraphics.class.
  * Don't forget to look at the inherited methods from JPanel and above, which will also be if use.
  * 
+ * <h2>Updating the Jar File</h2>
+ * If you need to update the jar file then remove the old one by expending Referenced Libraries in your project so that LBUGraphics.jar appears.
+ * Right click on LBUGraphics.jar and select Build path->Remove From Build Path.
+ * You will get syntax errors in your project where it references LBUGraphics but you can now ass the new version of LBUGraphics.jar using the steps above.
  * @author Duncan Mullier
- * @version 4.3 
+ * @version 4.4 
  * 
  * All software has bugs, if you find one please report to author. Ensure you have the latest version
+ * V4.4 updated documentation, changed reset to point turtle down
  * V4.3 change back to bitmap from index color model. 
  * V4.2 fixed bugs -no animation with turn without integer and setPenColour not working fixed>
  * V4.1 January 2023 exception added for fill operation
@@ -48,9 +54,6 @@ import javax.swing.JTextField;
  * V2.0 adds simple GUI interface, now an abstract class with CommandLineInterface Interface
  *<h2> example code </h2>
  * <pre>
-
-
-
 import java.awt.FlowLayout;
 
 import javax.swing.JFrame;
@@ -94,10 +97,10 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	/**
 	 * public version number.
 	 */
-	public final float VERSION = 4.3f; 
-	private  Color background_Col = Color.DARK_GRAY;
+	public final float VERSION = 4.4f; 
+	private  Color background_Col = Color.BLACK;	//background colour of the panel
 	private final static int TURTLE_X_SIZE = 72, TURTLE_Y_SIZE = 69;
-	private final int TURTLESTARTX = 600, TURTLESTARTY = 400;
+	private final int TURTLESTARTX = 800, TURTLESTARTY = 400;
 	private  int panelWidth = TURTLESTARTX;
 	private  int panelHeight = TURTLESTARTY;
 	private float StrokeWidth = 1;
@@ -277,23 +280,8 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	
 	/**
 	 * setPenColour sets the colour that the turtle will draw in
-	 * @param col palette index
-	 * 	0 0x000000, // Black
-		1    0x000080, // Navy
-		2    0x008000, // Green
-		3    0x008080, // Teal
-		4   0x800000, // Maroon
-		5    0x800080, // Purple
-		6   0x808000, // Olive
-		7    0xC0C0C0, // Silver
-		8   0x808080, // Gray
-		9   0x0000FF, // Blue
-		10   0x00FF00, // Lime
-		11   0x00FFFF, // Aqua
-		12    0xFF0000, // Red
-		13    0xFF00FF, // Fuchsia
-		14    0xFFFF00, // Yellow
-		15    0xFFFFFF  // White
+	 * @param col  Java Color to set the pen to
+	 * 
 	 */
 	public void setPenColour(Color col)
 	{
@@ -377,20 +365,29 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	 */
 	public void about()
 	{
-		//setStroke(10,false);
+		
 		Thread t = new Thread() 
 		{
 			public void run() 
 			{
+				final int aboutX = 250, aboutY = 200;
+				int saveX = getxPos();
+				int saveY = getyPos();
+				int saveDirection = getDirection()+90;
 				int saveSleep = sleepPeriod;
 				sleepPeriod = 1;
 				int dx = 50;
-				xPos=yPos=250;
+			
 				Graphics g = image.getGraphics();
-				Color savePen = PenColour; //save drawing pen
-				boolean savePendown = penDown;
+				Color savePen = getPenColour(); //save drawing pen
+				boolean savePenState = getPenState();
+				//move turtle to start position
+				penUp();
+				pointTurtle(270);
+				bresenham(xPos,yPos,aboutX,aboutY);
+				turnLeft();
 				penDown();
-				penSize=5;
+				setStroke(10);
 				setPenColour(Color.red);//Colour = 12;
 				circle(50);
 				penUp();
@@ -399,7 +396,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 				penDown();
 				setPenColour(Color.green);//Colour = 9;
 				circle(50);
-				//floodfill(raster, 0, 14, xPos,yPos);
+				
 				penUp();
 				forward(100);
 				penUp();
@@ -421,27 +418,32 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 				turnRight(360);
 				
 				PenColour = Color.GREEN;
-				
-				g.drawString("LBUGraphics Version "+VERSION,250,250);
+				g.setColor(Color.gray);
+				g.drawString("LBUGraphics Version "+VERSION,225,200);
+				g.setColor(Color.white);
+				g.drawString("LBUGraphics Version "+VERSION,228,203);
 				penSize=1;
 		
-				penDown = savePendown;
+				
 				PenColour = savePen; //restore pen
 				sleepPeriod = 100;
-				for(int i=0; i<15;i++)
-				{
-					cycleColours();
-					sleepThread(xPos,yPos);
-				}
-				sleepPeriod = saveSleep;
 				
-					repaint();
-			   
+				sleepPeriod = saveSleep;
+				//move turtle back to start position
+				penUp();
+				pointTurtle(270);
+				bresenham(xPos,yPos,saveX,saveY);
+				setxPos(saveX);
+				setyPos(saveY);
+				setPenState(savePenState);
+				pointTurtle(saveDirection);
+				repaint();
+				//reset();
 			}
 		};
 		t.start();
 		while(t.isAlive()); //wait until drawing finished.
-		//setStroke(1,false);
+		
 	}
 	
 	/**
@@ -451,6 +453,24 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	public void setTurtleSpeed(int speed)
 	{
 		this.sleepPeriod = speed;
+	}
+	/**
+	 * returns the current state of the pen
+	 * @return true if pen up, false if pen down
+	 */
+	
+	public boolean getPenState()
+	{
+		return penDown;
+	}
+	
+	/**
+	 * Change the pen state (true is down, false is up)
+	 * @param state of pen
+	 */
+	public void setPenState(boolean state)
+	{
+		penDown = state;
 	}
 	
 	/**
@@ -802,12 +822,14 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	 */
 	public void reset()
 	{
-		xPos = TURTLESTARTX/2;
-		yPos =  TURTLESTARTY/2;
-		penDown = false;
-		direction = 180; //down
-		repaint();
+		penUp();
+		bresenham(xPos, yPos, TURTLESTARTX/2, TURTLESTARTY/2);
+		//setxPos();
+		//setyPos();
+		setPenState(false);
+		pointTurtle(180);
 		setStroke(1);
+		repaint();
 		
 	}
 	
@@ -1150,7 +1172,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	}
 	
 	/**
-	 * unimplemented
+	 * unimplemented, it needs updating to work with an rgb bitmap
 	 * @param picture raster map of pixels
 	 * @param colorToReplace colour of background to fill
 	 * @param colorToPaint colour to replace background with
@@ -1215,8 +1237,6 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	public LBUGraphics()
 	{
 	
-		//Make index colour palette
-		colourModel = new IndexColorModel(4, 16, colors, 0, false, -1, DataBuffer.TYPE_BYTE); 
 		image = new BufferedImage(panelWidth, panelHeight, BufferedImage.TYPE_INT_RGB);//image = new BufferedImage(panelWidth, panelHeight, BufferedImage.TYPE_BYTE_INDEXED, colourModel);
 		raster = image.getRaster();
 		
@@ -1227,15 +1247,12 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 				penDown = false;
 				direction = 90; //right
 
-				//JPanel panel = new JPanel();
-				
 				setPreferredSize(new Dimension(panelWidth, panelHeight));
 				setLayout(new FlowLayout());
-				//setLayout(new GridLayout());
-				
+							
 				commandLine = new JTextField(25);
 				
-				//panel.add(commandLine);
+				
 				add(commandLine);
 				commandLine.setVisible(true);
 				commandLine.addActionListener(this);
@@ -1246,7 +1263,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 				messages = new JLabel("LBUGraphics V"+VERSION);
 				messages.setBackground(Color.white);
 				messages.setForeground(Color.red);
-				//messages.setText("hello");
+				
 				add(messages);
 				messages.setVisible(true);
 				//main drawing area
@@ -1258,16 +1275,15 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 				
 				} catch (IOException e) 
 				{
-					//throw new IOException("turtle images not found, you must have turtle0/90/180/270.png in project directory");
-					e.printStackTrace();
+						e.printStackTrace();
 				}	
 				
-				//setTurtleSpeed(50);
 				// Set max size of the panel, so that is matches the max size of the image.
 				setMaximumSize(new Dimension(image.getWidth(), image.getHeight()));
 				setSize(panelWidth, panelHeight);
 				setVisible(true);
 				revalidate();
+				clear();
 				repaint();
 			
 	}
@@ -1297,9 +1313,5 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 		
 		
 	}
-	
-	
-	
-		
 		
 }
