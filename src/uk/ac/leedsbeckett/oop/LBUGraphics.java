@@ -264,6 +264,14 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	}
 	
 	/**
+	 * Get the width in pixels of the pen.
+	 * @return stroke width
+	 */
+	public float getStroke()
+	{
+		return this.StrokeWidth;
+	}
+	/**
 	 * sets the width of the line drawn
 	 * @param strokeWidth integer representing the thickness of the line
 	 *
@@ -368,6 +376,8 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 		
 		Thread t = new Thread() 
 		{
+			private int savepenstroke;
+
 			public void run() 
 			{
 				final int aboutX = 250, aboutY = 200;
@@ -380,6 +390,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 			
 				Graphics g = image.getGraphics();
 				Color savePen = getPenColour(); //save drawing pen
+				float penstroke = getStroke();
 				boolean savePenState = getPenState();
 				//move turtle to start position
 				penUp();
@@ -437,6 +448,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 				setyPos(saveY);
 				setPenState(savePenState);
 				pointTurtle(saveDirection);
+				setStroke(savepenstroke);
 				repaint();
 				//reset();
 			}
