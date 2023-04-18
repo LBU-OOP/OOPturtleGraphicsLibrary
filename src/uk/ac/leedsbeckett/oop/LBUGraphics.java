@@ -98,7 +98,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	/**
 	 * public version number.
 	 */
-	public final float VERSION = 4.4f; 
+	public final float VERSION = 4.5f; 
 	private  Color background_Col = Color.BLACK;	//background colour of the panel
 	private final static int TURTLE_X_SIZE = 72, TURTLE_Y_SIZE = 69;
 	private final int TURTLESTARTX = 800, TURTLESTARTY = 400;
