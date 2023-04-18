@@ -45,6 +45,7 @@ import javax.swing.JTextField;
  * @version 4.4 
  * 
  * All software has bugs, if you find one please report to author. Ensure you have the latest version
+ * V4.5 setPanelSize(int, int) now revalidates the display so its effect is immediately seen.
  * V4.4 updated documentation, changed reset to point turtle down
  * V4.3 change back to bitmap from index color model. 
  * V4.2 fixed bugs -no animation with turn without integer and setPenColour not working fixed>
@@ -816,6 +817,8 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 		///image = new BufferedImage(panelWidth, panelHeight, BufferedImage.TYPE_INT_RGB);
 		setPreferredSize(new Dimension(panelWidth, panelHeight));
 		clear();
+		revalidate();
+		repaint();
 	}
 	
 	/**
