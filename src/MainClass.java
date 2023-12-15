@@ -12,9 +12,9 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
-import uk.ac.leedsbeckett.oop.LBUGraphics;
+import uk.ac.leedsbeckett.oop.OOPGraphics;
 
-public class MainClass extends LBUGraphics{
+public class MainClass extends OOPGraphics{
 
 	public static void main(String[] args) {
 		new MainClass();
@@ -46,9 +46,9 @@ public class MainClass extends LBUGraphics{
 	}
 	
 	@Override
-	 public void processCommand(String command)      //this method must be provided because LBUGraphics will call it when it's JTextField is used
+	 public void processCommand(String command)      //this method must be provided because OOPGraphics will call it when it's JTextField is used
     {
-            //String parameter is the text typed into the LBUGraphics JTextfield
+            //String parameter is the text typed into the OOPGraphics JTextfield
             //lands here if return was pressed or "ok" JButton clicked
             //TO DO 
     	command = command.toLowerCase();

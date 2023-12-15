@@ -8,14 +8,11 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBuffer;
 import java.awt.image.IndexColorModel;
 import java.awt.image.WritableRaster;
 import java.io.File;
@@ -23,28 +20,28 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 /**
- * LBUGraphics (Duncan Mullier, Leeds Beckett University)
+ * OOPGraphics (Duncan Mullier, Leeds Beckett University)
  * extended JPanel with simple drawing commands and a visual representation of a turtle to perform "turtle graphics" drawing operations.
  * <h2>Adding the Jar File</h2>
  * The jar file should be added to your build path. You must have created a project and be in the package explorer view if you don't see it (Window->Show View->Package Explorer)
  * Right click on your project, select "Build Path-Add External Archive" and add jar file.
- * It will appear in your project explorer under "referenced libraries", inside the jar will be LBUGraphics.class.
+ * It will appear in your project explorer under "referenced libraries", inside the jar will be OOPGraphics.class.
  * Don't forget to look at the inherited methods from JPanel and above, which will also be if use.
  * 
  * <h2>Updating the Jar File</h2>
- * If you need to update the jar file then remove the old one by expending Referenced Libraries in your project so that LBUGraphics.jar appears.
- * Right click on LBUGraphics.jar and select Build path->Remove From Build Path.
- * You will get syntax errors in your project where it references LBUGraphics but you can now ass the new version of LBUGraphics.jar using the steps above.
+ * If you need to update the jar file then remove the old one by expending Referenced Libraries in your project so that OOPGraphics.jar appears.
+ * Right click on OOPGraphics.jar and select Build path->Remove From Build Path.
+ * You will get syntax errors in your project where it references OOPGraphics but you can now ass the new version of OOPGraphics.jar using the steps above.
  * @author Duncan Mullier
  * @version 4.4 
  * 
  * All software has bugs, if you find one please report to author. Ensure you have the latest version
+ * V5.0 renamed to OOPGraphics
  * V4.5 setPanelSize(int, int) now revalidates the display so its effect is immediately seen.
  * V4.4 updated documentation, changed reset to point turtle down
  * V4.3 change back to bitmap from index color model. 
@@ -59,13 +56,13 @@ import java.awt.FlowLayout;
 
 import javax.swing.JFrame;
 
-import uk.ac.leedsbeckett.oop.LBUGraphics;
+import uk.ac.leedsbeckett.oop.OOPGraphics;
 
-public class Main extends LBUGraphics
+public class Main extends OOPGraphics
 {
 	public static void main(String[] args)
 	{
-		new Main(); //create instance of class that extends LBUGraphics (could be separate class without main), gets out of static context
+		new Main(); //create instance of class that extends OOPGraphics (could be separate class without main), gets out of static context
 	}
 
 	public Main()
@@ -75,13 +72,13 @@ public class Main extends LBUGraphics
 		MainFrame.add(this);					//"this" is this object that extends turtle graphics so we are adding a turtle graphics panel to the frame
 		MainFrame.pack();						//set the frame to a size we can see
 		MainFrame.setVisible(true);				//now display it
-		about();								//call the LBUGraphics about method to display version information.
+		about();								//call the OOPGraphics about method to display version information.
 	}
 
 	
-	public void processCommand(String command)	//this method must be provided because LBUGraphics will call it when it's JTextField is used
+	public void processCommand(String command)	//this method must be provided because OOPGraphics will call it when it's JTextField is used
 	{
-		//String parameter is the text typed into the LBUGraphics JTextfield
+		//String parameter is the text typed into the OOPGraphics JTextfield
 		//lands here if return was pressed or "ok" JButton clicked
 		//TO DO 
 	}
@@ -92,13 +89,13 @@ public class Main extends LBUGraphics
  */
 @SuppressWarnings("serial")
 
-public abstract class LBUGraphics extends JPanel implements ActionListener, CommandLineInterface
+public abstract class OOPGraphics extends JPanel implements ActionListener, CommandLineInterface
 {
 
 	/**
 	 * public version number.
 	 */
-	public final float VERSION = 4.5f; 
+	public final float VERSION = 5.0f;
 	private  Color background_Col = Color.BLACK;	//background colour of the panel
 	private final static int TURTLE_X_SIZE = 72, TURTLE_Y_SIZE = 69;
 	private final int TURTLESTARTX = 800, TURTLESTARTY = 400;
@@ -174,7 +171,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	protected int turtleSpeed = 1; //speed for turtle animation
 
 	/**
-	 * must be implemented in your class so that TurtleGraphics can call your code when something happens at the LBUGraphics GUI (i.e. user presses return in text field or clicks ok button).
+	 * must be implemented in your class so that TurtleGraphics can call your code when something happens at the OOPGraphics GUI (i.e. user presses return in text field or clicks ok button).
 	 * If you do not implement this method you will get a syntax error.
 	 * @param command is the String typed into the text field before return was pressed or ok was clicked.
 	 */
@@ -195,7 +192,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 			}
 			catch(NumberFormatException e)
 			{
-				throw new NumberFormatException("***LBUGraphics Exception*** cannot convert parameter "+(i+1)+" (\""+split[i]+ "\") to an integer");				
+				throw new NumberFormatException("***OOPGraphics Exception*** cannot convert parameter "+(i+1)+" (\""+split[i]+ "\") to an integer");				
 			}
 		}
 		return params;
@@ -400,19 +397,19 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 				turnLeft();
 				penDown();
 				setStroke(10);
-				setPenColour(Color.red);//Colour = 12;
+				setPenColour(Color.blue);//Colour = 12;
 				circle(50);
 				penUp();
 				turnLeft(90);
-				forward(150);
+				forward(100);
 				penDown();
 				setPenColour(Color.green);//Colour = 9;
 				circle(50);
 				
 				penUp();
-				forward(100);
+				forward(65);
 				penUp();
-				setPenColour(Color.blue);//Colour = 2;
+				setPenColour(Color.red);//Colour = 2;
 				turnLeft(90);
 				forward(50);
 				penDown();
@@ -431,9 +428,9 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 				
 				PenColour = Color.GREEN;
 				g.setColor(Color.gray);
-				g.drawString("LBUGraphics Version "+VERSION,225,200);
+				g.drawString("OOPGraphics Version "+VERSION,225,200);
 				g.setColor(Color.white);
-				g.drawString("LBUGraphics Version "+VERSION,228,203);
+				g.drawString("OOPGraphics Version "+VERSION,228,203);
 				penSize=1;
 		
 				
@@ -775,7 +772,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	}
 
 	/**
-	 * set the preferred size of the LBUGraphics panel
+	 * set the preferred size of the OOPGraphics panel
 	 * @param width in pixels
 	 * @param height in pixels
 	 */
@@ -1249,7 +1246,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	 *
 	 */
 	
-	public LBUGraphics()
+	public OOPGraphics()
 	{
 	
 		image = new BufferedImage(panelWidth, panelHeight, BufferedImage.TYPE_INT_RGB);//image = new BufferedImage(panelWidth, panelHeight, BufferedImage.TYPE_BYTE_INDEXED, colourModel);
@@ -1275,7 +1272,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 				add(okBut);
 				okBut.setVisible(true);
 				okBut.addActionListener(this);
-				messages = new JLabel("LBUGraphics V"+VERSION);
+				messages = new JLabel("OOPGraphics V"+VERSION);
 				messages.setBackground(Color.white);
 				messages.setForeground(Color.red);
 				
@@ -1286,7 +1283,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 				//small image to display on top of drawing area to represent the turtle
 				
 				try {
-					turtle0 = ImageIO.read(LBUGraphics.class.getResource("turtle90.png"));
+					turtle0 = ImageIO.read(OOPGraphics.class.getResource("turtle90.png"));
 				
 				} catch (IOException e) 
 				{
