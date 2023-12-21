@@ -3,7 +3,6 @@ import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.MediaTracker;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -110,10 +109,6 @@ public class MainClass extends OOPGraphics{
     	System.out.println("command = "+command);
     }
 	
-	private void setBackgroundColour(Color darkgray) {
-		// TODO Auto-generated method stub
-		
-	}
 
 	public void load() 
 	{
@@ -123,37 +118,13 @@ public class MainClass extends OOPGraphics{
 			setBufferedImage(image);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Error with library, turtle image not found.");
 		}
 	
 		repaint();
 		
 	}
-	public void load2()
-	{
-		String imagePath = "image.png";
-		Image indexImage = Toolkit.getDefaultToolkit().getImage(imagePath);
-		
-		
-		BufferedImage bufferedImage = getBufferedImage(); 
-	    Graphics g = bufferedImage.getGraphics();  // Graphics for the first object only
-	    // Create a BufferedImage object from the loaded Image object
-       // BufferedImage bufferedIndexImage = new BufferedImage(indexImage.getWidth(null),
-        //    indexImage.getHeight(null), BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g2d = getGraphics2DContext();
-        g2d.drawImage(indexImage, 0, 0, null);
-        g2d.dispose();
-	 /*   try {
-	        // BufferedImage object TWO
-	        bufferedImage = ImageIO.read(getClass().getResource("image.jpg"));
 
-	    } catch (IOException e) {
-	        e.printStackTrace();
-	    }
-	    setBufferedImage(bufferedImage);*/
-	    repaint();
-	}
-	
 	public void save()
 	{
 		
@@ -165,54 +136,5 @@ public class MainClass extends OOPGraphics{
 			e.printStackTrace();
 		}
 	}
-	/*public void processCommand(String command)
-	{
-		String[] params = command.split(" ");
-		command = params[0];
-		//cycleColours();
-		if (command.equalsIgnoreCase("forward"))
-			forward(200);
-		if (command.equalsIgnoreCase("circle"))
-			circle(50);
-		if (command.equalsIgnoreCase("turnleft"))
-			turnLeft(90);
-		if (command.equalsIgnoreCase("turnright"))
-			turnRight(90);
-		if (command.equalsIgnoreCase("pendown"))
-			penDown();
-		if (command.equalsIgnoreCase("penup"))
-			penUp();
-		if (command.equalsIgnoreCase("about"))
-			about();
-		if (command.equalsIgnoreCase("fill"))
-		{
-			Colour = 2;
-			try {
-				fill();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				System.out.println("area too big "+e);
-			}
-			System.out.println("fill");
-		}
-		if (command.equalsIgnoreCase("red"))
-		{
-			setPenColour(Color.red);
-			System.out.println("red");
-		}
-			if (command.equalsIgnoreCase("green"))
-			setPenColour(Color.green);
-		if (command.equalsIgnoreCase("blue"))
-			setPenColour(Color.blue);
-		if (command.equalsIgnoreCase("set"))
-		{
-			
-			int degrees = Integer.parseInt(params[1]);
-			pointTurtle(degrees);
-			
-			
-		}
-		System.out.println(direction);
-	}
-*/
+
 }

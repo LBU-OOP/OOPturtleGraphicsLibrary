@@ -13,7 +13,6 @@ import java.awt.event.ActionListener;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
-import java.awt.image.IndexColorModel;
 import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
@@ -27,19 +26,30 @@ import javax.swing.JTextField;
 /**
  * OOPGraphics (Duncan Mullier, Leeds Beckett University)
  * extended JPanel with simple drawing commands and a visual representation of a turtle to perform "turtle graphics" drawing operations.
- * <h2>Adding the Jar File</h2>
+ *  @author Duncan Mullier
+ *  @version 5.0
+ *
+ * <h2>Adding the Jar File Eclipse</h2>
  * The jar file should be added to your build path. You must have created a project and be in the package explorer view if you don't see it (Window->Show View->Package Explorer)
- * Right click on your project, select "Build Path-Add External Archive" and add jar file.
+ * Right-click on your project, select "Build Path-Add External Archive" and add jar file.
  * It will appear in your project explorer under "referenced libraries", inside the jar will be OOPGraphics.class.
  * Don't forget to look at the inherited methods from JPanel and above, which will also be if use.
- * 
- * <h2>Updating the Jar File</h2>
+ *
+ * <h2>Updating the Jar File Eclipse</h2>
  * If you need to update the jar file then remove the old one by expending Referenced Libraries in your project so that OOPGraphics.jar appears.
  * Right click on OOPGraphics.jar and select Build path->Remove From Build Path.
- * You will get syntax errors in your project where it references OOPGraphics but you can now ass the new version of OOPGraphics.jar using the steps above.
- * @author Duncan Mullier
- * @version 4.4 
- * 
+ * You will get syntax errors in your project where it references OOPGraphics, but you can now add the new version of OOPGraphics.jar using the steps above.
+ *
+ * <h2>Adding the Jar File IntelliJ</h2>
+ * <a href="https://www.geeksforgeeks.org/how-to-add-external-jar-file-to-an-intellij-idea-project/">...</a>
+ * Open your installed IntelliJ IDEA Project and
+ * Go to the File > Project Structure
+ * Select Modules at the left panel and select the Dependencies tab.
+ * Select the + icon and select 1 JARs or Directories option.
+ * select OOPGraphics.jar.
+ * Click on the OK button
+ *
+ *
  * All software has bugs, if you find one please report to author. Ensure you have the latest version
  * V5.0 renamed to OOPGraphics
  * V4.5 setPanelSize(int, int) now revalidates the display so its effect is immediately seen.
@@ -60,34 +70,34 @@ import uk.ac.leedsbeckett.oop.OOPGraphics;
 
 public class Main extends OOPGraphics
 {
-	public static void main(String[] args)
-	{
-		new Main(); //create instance of class that extends OOPGraphics (could be separate class without main), gets out of static context
-	}
+public static void main(String[] args)
+{
+new Main(); //create instance of class that extends OOPGraphics (could be separate class without main), gets out of static context
+}
 
-	public Main()
-	{
-		JFrame MainFrame = new JFrame();		//create a frame to display the turtle panel on
-		MainFrame.setLayout(new FlowLayout());	//not strictly necessary
-		MainFrame.add(this);					//"this" is this object that extends turtle graphics so we are adding a turtle graphics panel to the frame
-		MainFrame.pack();						//set the frame to a size we can see
-		MainFrame.setVisible(true);				//now display it
-		about();								//call the OOPGraphics about method to display version information.
-	}
+public Main()
+{
+JFrame MainFrame = new JFrame();		//create a frame to display the turtle panel on
+MainFrame.setLayout(new FlowLayout());	//not strictly necessary
+MainFrame.add(this);					//"this" is this object that extends turtle graphics so we are adding a turtle graphics panel to the frame
+MainFrame.pack();						//set the frame to a size we can see
+MainFrame.setVisible(true);				//now display it
+about();								//call the OOPGraphics about method to display version information.
+}
 
-	
-	public void processCommand(String command)	//this method must be provided because OOPGraphics will call it when it's JTextField is used
-	{
-		//String parameter is the text typed into the OOPGraphics JTextfield
-		//lands here if return was pressed or "ok" JButton clicked
-		//TO DO 
-	}
+
+public void processCommand(String command)	//this method must be provided because OOPGraphics will call it when it's JTextField is used
+{
+//String parameter is the text typed into the OOPGraphics JTextfield
+//lands here if return was pressed or "ok" JButton clicked
+//TO DO
+}
 }
 
 </pre>
-@since 3/2023
+ @since 3/2023
  */
-@SuppressWarnings("serial")
+
 
 public abstract class OOPGraphics extends JPanel implements ActionListener, CommandLineInterface
 {
@@ -105,7 +115,7 @@ public abstract class OOPGraphics extends JPanel implements ActionListener, Comm
 	private BasicStroke Stroke = new BasicStroke( StrokeWidth );
 	
 	
-	private JTextField commandLine = null;
+	private final JTextField commandLine;
 	private JLabel messages = null;
 	private JButton okBut = null;
 	/**
@@ -115,8 +125,7 @@ public abstract class OOPGraphics extends JPanel implements ActionListener, Comm
 	private BufferedImage image, turtleDisplay, turtle0;
 	//index colour model, palette of 16 RGB colours with no alpha (so 3 elements, 4 bits - 16 colours)
 
-	private IndexColorModel colourModel; // = new IndexColorModel(4,16,red, green, blue); //palette image
-	WritableRaster raster; 		//actual array of pixels.
+		WritableRaster raster; 		//actual array of pixels.
 	//colour palette for indexed colour image
 	int[] colors = {
 		    0x000000, // Black
@@ -147,22 +156,22 @@ public abstract class OOPGraphics extends JPanel implements ActionListener, Comm
 	/**
 	 * a moving turtle will draw if this is true and not if it is false (set by penDown and PenUp methods)
 	 */
-	protected boolean penDown = false;
+	protected boolean penDown;
 	
 	/**
 	 * x position of the turtle on the screen
 	 */
-	protected int xPos=100;
+	protected int xPos;
 	
 	/**
 	 * y position of the turtle on the screen
 	 */
-	protected int yPos=100;
+	protected int yPos;
 	
 	/**
-	 * direction the turtle is pointing in in degrees
+	 * direction the turtle is pointing in, in degrees
 	 */
-	protected int direction = 180; //robot pointing down the screen;
+	protected int direction;
 	
 	/**
 	 * delay for turtle animation
@@ -214,7 +223,7 @@ public abstract class OOPGraphics extends JPanel implements ActionListener, Comm
 	}
 	
 	/**
-	 * returns the graphicsContext of the Turtle display so you can draw on it using the extended Graphics2Dl Java drawing methods
+	 * returns the graphicsContext of the Turtle display, so you can draw on it using the extended Graphics2Dl Java drawing methods
 	 * example
 	 * Graphics g = getGraphics2DContext();
 	 *	g.setColor(Color.red);
@@ -223,8 +232,8 @@ public abstract class OOPGraphics extends JPanel implements ActionListener, Comm
 	 */
 	public Graphics2D getGraphics2DContext()
 	{
-		Graphics2D g2 = (Graphics2D) getGraphicsContext();
-		return  g2;
+		return (Graphics2D) getGraphicsContext();
+
 	}
 	
 	/**
@@ -313,8 +322,6 @@ public abstract class OOPGraphics extends JPanel implements ActionListener, Comm
 	 */
 	public void drawLine(Color color, int x1, int y1, int x2, int y2) 
 	{
-		//x2+=10;
-		//y2+=10;
 		Graphics2D g = (Graphics2D) image.getGraphics();
 		g.setColor(color);
 		g.setStroke(Stroke);
@@ -388,7 +395,7 @@ public abstract class OOPGraphics extends JPanel implements ActionListener, Comm
 			
 				Graphics g = image.getGraphics();
 				Color savePen = getPenColour(); //save drawing pen
-				float penstroke = getStroke();
+				savepenstroke = (int) getStroke();
 				boolean savePenState = getPenState();
 				//move turtle to start position
 				penUp();
@@ -598,9 +605,8 @@ public abstract class OOPGraphics extends JPanel implements ActionListener, Comm
 					repaint();
 					try {
 						Thread.sleep(sleepPeriod);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+					} catch (InterruptedException ignored) {
+
 					} //wait until drawing finished.
 				}
 			}
@@ -637,7 +643,7 @@ public abstract class OOPGraphics extends JPanel implements ActionListener, Comm
 			turnRight(rot);
 	}
 	/**
-	 * turtle is moved in the direction it is pointing by given nuymber of pixels. 
+	 * turtle is moved in the direction it is pointing by given number of pixels.
 	 * @param amount is a String
 	 * if param cannot be converted to an integer a NumberFormatException is thrown.
 	 */
@@ -670,7 +676,7 @@ public abstract class OOPGraphics extends JPanel implements ActionListener, Comm
 			
 		try {
 				Thread.sleep(sleepPeriod);
-		} catch (InterruptedException e)
+		} catch (InterruptedException ignored)
 		{
 		} 
 	}
@@ -700,9 +706,9 @@ public abstract class OOPGraphics extends JPanel implements ActionListener, Comm
 		final int h = (int) Math.floor(turtle0.getHeight() * cos + turtle0.getWidth() * sin);
 		  turtleDisplay = new BufferedImage(w, h, turtle0.getType());
 		final AffineTransform at = new AffineTransform();
-		at.translate(w / 2, h / 2);
+		at.translate((double) w / 2, (double) h / 2);
 		at.rotate(rads,0, 0);
-		at.translate(-turtle0.getWidth() / 2, -turtle0.getHeight() / 2);
+		at.translate((double) -turtle0.getWidth() / 2, (double) -turtle0.getHeight() / 2);
 		final AffineTransformOp rotateOp = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
 		turtleDisplay = rotateOp.filter(turtle0,turtleDisplay);
 		
@@ -720,7 +726,7 @@ public abstract class OOPGraphics extends JPanel implements ActionListener, Comm
 		boolean savePendown = penDown;
 		int savex = xPos;
 		int savey = yPos;
-		//direction = 90;
+
 		//move turtle to outer edge of circle
 		pointTurtle(0);
 		penUp();
@@ -736,26 +742,7 @@ public abstract class OOPGraphics extends JPanel implements ActionListener, Comm
 		penDown = savePendown;
 		direction = saveDirection;
 	}
-	/**
-	 * Perform a flood fill operation at the current turtle position, needs to be surounded by a graphical area or exception is thrown
-	 * @throws Exception when fill area is too big
-	 */
-	public void fill() throws Exception
-	{
-		try
-		{
-			int pixels[] = new int[4];
-			System.out.println(xPos+"    "+yPos);
-			raster.getPixel(xPos, yPos, pixels); //get colour at turtle as colour to fill
-			int currentColor = pixels[0];
-			floodfill(raster, 0, 14, xPos,yPos);
-		}
-		catch(java.lang.StackOverflowError e)
-		{
-			throw new Exception("Fill area too big");
-		}
-		//floodfill(raster, currentColor, Colour, xPos,yPos);
-	}
+
 	@Override
 	/**
 	 * overridden paintComponent method to handle image updating (do not call directly, use repaint();)
@@ -797,8 +784,7 @@ public abstract class OOPGraphics extends JPanel implements ActionListener, Comm
 			turtle0 = ImageIO.read(file);
 			
 		} catch (IOException e) {
-			//throw new IOException("turtle images not found, you must have turtle0/90/180/270.png in project directory");
-			e.printStackTrace();
+			System.out.println("Invalid turtle image, ensure it is in a valid image file.");
 		}
 	}
 	
@@ -836,8 +822,6 @@ public abstract class OOPGraphics extends JPanel implements ActionListener, Comm
 	{
 		penUp();
 		bresenham(xPos, yPos, TURTLESTARTX/2, TURTLESTARTY/2);
-		//setxPos();
-		//setyPos();
 		setPenState(false);
 		pointTurtle(180);
 		setStroke(1);
@@ -864,7 +848,7 @@ public abstract class OOPGraphics extends JPanel implements ActionListener, Comm
 		this.commandLine.setText("");
 	}
 	
-	/**
+	/*
 	 * raw drawing methods
 	 */
 	
@@ -937,7 +921,7 @@ public abstract class OOPGraphics extends JPanel implements ActionListener, Comm
 				} 
 				//calculate number of rotations
 				int rotations = xcoords.get(0).size() * 8; //plots per octants x octants
-				int round = (Math.round(rotations/360)) + 1;
+				int round = (Math.round((float) rotations /360)) + 1;
 				
 				//calculated 8 octs now plot them in order
 				int plots = xcoords.get(0).size(); //the number of plots in this circle
@@ -954,20 +938,20 @@ public abstract class OOPGraphics extends JPanel implements ActionListener, Comm
 					}
 					else
 					{
-						start = 0;
+						//start = 0;
 						end = count;
-						step = 1;
+						//step = 1;
 					}
 					for(int j=start; j != end; j = j + step)
 					{
 						//turn the turtle a bit for each plot
 						if(j % round == 0)
 							direction++;
-						setPixel(xcoords.get(i).get(j),ycoords.get(i).get(j), Colour, raster);//drawLine(PenColour, xcoords.get(i).get(j) , ycoords.get(i).get(j) , xcoords.get(i).get(j)+penSize, ycoords.get(i).get(j));//[i][j], ys[i][j],  xs[i][j]+10, ys[i][j]+10); 
-					   //spiral++;
+						setPixel(xcoords.get(i).get(j),ycoords.get(i).get(j), Colour, raster);
+
 						try {
 							Thread.sleep(sleepPeriod);
-						} catch (InterruptedException e) {
+						} catch (InterruptedException ignored) {
 							
 						} //wait until drawing finished.
 					   xPos = xcoords.get(i).get(j);
@@ -985,10 +969,10 @@ public abstract class OOPGraphics extends JPanel implements ActionListener, Comm
 	
 	/**
 	 * plots a bresenham line point by point. It draws if the pen is down otherwise it just moves the turtle
-	 * @param x1
-	 * @param y1
-	 * @param x2
-	 * @param y2
+	 * @param x1 x position of line beginning
+	 * @param y1 y position of line beginning
+	 * @param x2 x position of line end
+	 * @param y2 y position of line end
 	 */
 	void bresenham(int x1, int y1, int x2, int y2) 
 	{    
@@ -1001,10 +985,10 @@ public abstract class OOPGraphics extends JPanel implements ActionListener, Comm
 				int dy = y2 - y1;
 		
 			    int error;
-			    /** first quarter */
+                /* first quarter */
 			    if(dx >= 0 && dy >= 0) 
 			    {
-			        /** 1st octant */
+			        /* 1st octant */
 			        if (dx >= dy) 
 			        {
 			            error = -dx;
@@ -1016,14 +1000,14 @@ public abstract class OOPGraphics extends JPanel implements ActionListener, Comm
 			            	if (penDown)
 			            		setPixel(x,y, Colour, raster);
 			                
-			            		error = error + 2 * dy;
+							error = error + 2 * dy;
 			                if (error >= 0) {
 			                    y++;
 			                    error = error - 2 * dx;
 			                }
 			            }
 			        }
-			        /** 2nd octant */
+			        /* 2nd octant */
 			        else {
 			            error = -dy;
 			            int x = x1;
@@ -1039,10 +1023,10 @@ public abstract class OOPGraphics extends JPanel implements ActionListener, Comm
 			            }
 			        }
 			    }
-			    /** second quarter */
+			    /* second quarter */
 			    else if (dx <= 0 && dy >= 0) 
 			    {
-			        /** 4th octant */
+			        /* 4th octant */
 			        if(dx < -dy) {
 			            error = dx;
 			            int y = y1;
@@ -1057,7 +1041,7 @@ public abstract class OOPGraphics extends JPanel implements ActionListener, Comm
 			                }
 			            }
 			        }
-			        /** 3rd octant */
+			        /* 3rd octant */
 			        else {
 			            error = -dy;
 			            int x = x1;
@@ -1074,10 +1058,10 @@ public abstract class OOPGraphics extends JPanel implements ActionListener, Comm
 			            }
 			        }
 			    }
-			    /** 3rd quarter */
+			    /* 3rd quarter */
 			    else if (dx <= 0 && dy <= 0) 
 			    {
-			        /** 5th octant */
+			        /* 5th octant */
 			        if(dx <= dy) {
 			            error = 2 * dx;
 			            int y = y1;
@@ -1092,7 +1076,7 @@ public abstract class OOPGraphics extends JPanel implements ActionListener, Comm
 			                }
 			            }
 			        }
-			        /** 6th octant */
+			        /* 6th octant */
 			        else {
 			            error = 2 * dy;
 			            int x = x1;
@@ -1111,7 +1095,7 @@ public abstract class OOPGraphics extends JPanel implements ActionListener, Comm
 			    }
 			    /* 4th quarter */
 			    else if(dx >= 0 && dy <= 0) {
-			        /** 7th octant */
+			        /* 7th octant */
 			        if(dx < -dy) 
 			        {
 			            error = 2 * dy;
@@ -1127,7 +1111,7 @@ public abstract class OOPGraphics extends JPanel implements ActionListener, Comm
 			                }
 			            }
 			        }
-			        /** 8th octant */
+			        /* 8th octant */
 			        else {
 			            error = -dx;
 			            int y = y1;
@@ -1183,60 +1167,23 @@ public abstract class OOPGraphics extends JPanel implements ActionListener, Comm
 		repaint();
 	}
 	
-	/**
-	 * unimplemented, it needs updating to work with an rgb bitmap
-	 * @param picture raster map of pixels
-	 * @param colorToReplace colour of background to fill
-	 * @param colorToPaint colour to replace background with
-	 * @param x x position
-	 * @param y y position
-	 * 
-	 */
-	 public void floodfill(WritableRaster picture, int colorToReplace, int colorToPaint, int x, int y) 
-	 {
-		   throw  new java.lang.UnsupportedOperationException("not yet implemented flood fill");
-	 }
 
-		  private void validatePicture(WritableRaster picture) 
-		  {
-		    if (picture == null) {
-		      throw new IllegalArgumentException("You can't pass a null instance as picture");
-		    }
-		  }
-
-		  /**
-		   * Method created to avoid IndexOutOfBoundExceptions. This method return -1 if you try to access
-		   * an invalid position.
-		   */
-		  private static int getValueAt(int[][] picture, int x, int y) 
-		  {
-		    if (x < 0 || y < 0 || x > picture.length || y > picture[x].length) 
-		    {
-		      return -1;
-		    } else 
-		    {
-		      return picture[x][y];
-		    }
-		  }
-	/*=========end flood fill========*/
-	
 	/**
 	 * sleep the thread and update the turtle xPos and yPos (if positive) and repaint the display
-	 * @param x
-	 * @param y
+	 * @param x x position of turtle
+	 * @param y y position of turtle
 	 */
 	private void sleepThread(int x, int y)
 	{
 		
 		try {
 			Thread.sleep(sleepPeriod);
-		} catch (InterruptedException e) {}
+		} catch (InterruptedException ignored) {}
 		if (xPos >-1 && yPos >-1)
 		{
 			xPos = x;
 			yPos = y;
-			// if (speed++ % turtleSpeed == 0)
-				   repaint();
+			repaint();
 		}
 	}
 	/**
@@ -1287,7 +1234,7 @@ public abstract class OOPGraphics extends JPanel implements ActionListener, Comm
 				
 				} catch (IOException e) 
 				{
-						e.printStackTrace();
+						System.out.println("Error with library, turtle iimage not found.");
 				}	
 				
 				// Set max size of the panel, so that is matches the max size of the image.
