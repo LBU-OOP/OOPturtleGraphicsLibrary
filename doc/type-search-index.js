@@ -1,1 +1,0 @@
-typeSearchIndex = [{"l":"All Classes and Interfaces","u":"allclasses-index.html"},{"p":"uk.ac.leedsbeckett.oop","l":"LBUGraphics"}];updateSearchResults();

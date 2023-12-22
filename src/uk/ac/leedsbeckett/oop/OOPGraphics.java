@@ -27,71 +27,71 @@ import javax.swing.JTextField;
  * OOPGraphics (Duncan Mullier, Leeds Beckett University)
  * extended JPanel with simple drawing commands and a visual representation of a turtle to perform "turtle graphics" drawing operations.
  *  @author Duncan Mullier
- *  @version 5.0
+ *  @version 5.1
  *
  * <h2>Adding the Jar File Eclipse</h2>
- * The jar file should be added to your build path. You must have created a project and be in the package explorer view if you don't see it (Window->Show View->Package Explorer)
- * Right-click on your project, select "Build Path-Add External Archive" and add jar file.
- * It will appear in your project explorer under "referenced libraries", inside the jar will be OOPGraphics.class.
- * Don't forget to look at the inherited methods from JPanel and above, which will also be if use.
+ * <p>The jar file should be added to your build path. You must have created a project and be in the package explorer view if you don't see it (Window->Show View->Package Explorer)</p>
+ * <p>Right-click on your project, select "Build Path-Add External Archive" and add jar file.</p>
+ * <p>It will appear in your project explorer under "referenced libraries", inside the jar will be OOPGraphics.class.</p>
+ * <p>Don't forget to look at the inherited methods from JPanel and above, which will also be if use.</p>
  *
  * <h2>Updating the Jar File Eclipse</h2>
- * If you need to update the jar file then remove the old one by expending Referenced Libraries in your project so that OOPGraphics.jar appears.
- * Right click on OOPGraphics.jar and select Build path->Remove From Build Path.
- * You will get syntax errors in your project where it references OOPGraphics, but you can now add the new version of OOPGraphics.jar using the steps above.
+ * <p>If you need to update the jar file then remove the old one by expending Referenced Libraries in your project so that OOPGraphics.jar appears.</p>
+ * <p>Right click on OOPGraphics.jar and select Build path->Remove From Build Path.</p>
+ * <p>You will get syntax errors in your project where it references OOPGraphics, but you can now add the new version of OOPGraphics.jar using the steps above.</p>
  *
  * <h2>Adding the Jar File IntelliJ</h2>
  * <a href="https://www.geeksforgeeks.org/how-to-add-external-jar-file-to-an-intellij-idea-project/">...</a>
- * Open your installed IntelliJ IDEA Project and
- * Go to the File > Project Structure
- * Select Modules at the left panel and select the Dependencies tab.
- * Select the + icon and select 1 JARs or Directories option.
- * select OOPGraphics.jar.
- * Click on the OK button
+ * <p>Open your installed IntelliJ IDEA Project and</p>
+ * <p>Go to the File > Project Structure</p>
+ * <p>Select Modules at the left panel and select the Dependencies tab.</p>
+ * <p>Select the + icon and select 1 JARs or Directories option.</p>
+ * <p>select OOPGraphics.jar.</p>
+ * <p>Click on the OK button</p>
  *
  *
- * All software has bugs, if you find one please report to author. Ensure you have the latest version
- * V5.0 renamed to OOPGraphics
- * V4.5 setPanelSize(int, int) now revalidates the display so its effect is immediately seen.
- * V4.4 updated documentation, changed reset to point turtle down
- * V4.3 change back to bitmap from index color model. 
- * V4.2 fixed bugs -no animation with turn without integer and setPenColour not working fixed>
- * V4.1 January 2023 exception added for fill operation
- * V4.0 rewritten to have pixel by pixel animated turtle
- * V3.1 threaded about() now holds execution until it has completed, added stroke and graphics2d
- * V2.0 adds simple GUI interface, now an abstract class with CommandLineInterface Interface
+ * <p>All software has bugs, if you find one please report to author. Ensure you have the latest version.</p>
+ * <p>V5.1 changed about() graphics, minor tidy up.</p>
+ * <p>V5.0 renamed to OOPGraphics</p>
+ * <p>V4.5 setPanelSize(int, int) now revalidates the display so its effect is immediately seen.</p>
+ * <p>V4.4 updated documentation, changed reset to point turtle down.</p>
+ * <p>V4.3 change back to bitmap from index color model. </p>
+ * <p>V4.2 fixed bugs -no animation with turn without integer and setPenColour not working fixed.</p>
+ * <p>V4.1 January 2023 exception added for fill operation.</p>
+ * <p>V4.0 rewritten to have pixel by pixel animated turtle. </p>
+ * <p>V3.1 threaded about() now holds execution until it has completed, added stroke and graphics2d.</p>
+ * <p>V2.0 adds simple GUI interface, now an abstract class with CommandLineInterface Interface.</p>
  *<h2> example code </h2>
  * <pre>
 import java.awt.FlowLayout;
-
 import javax.swing.JFrame;
-
 import uk.ac.leedsbeckett.oop.OOPGraphics;
 
 public class Main extends OOPGraphics
 {
-public static void main(String[] args)
-{
-new Main(); //create instance of class that extends OOPGraphics (could be separate class without main), gets out of static context
-}
+	public static void main(String[] args)
+	{
+		new Main(); //create instance of class that extends OOPGraphics (could be separate class without main), gets out of static context
+	}
 
-public Main()
-{
-JFrame MainFrame = new JFrame();		//create a frame to display the turtle panel on
-MainFrame.setLayout(new FlowLayout());	//not strictly necessary
-MainFrame.add(this);					//"this" is this object that extends turtle graphics so we are adding a turtle graphics panel to the frame
-MainFrame.pack();						//set the frame to a size we can see
-MainFrame.setVisible(true);				//now display it
-about();								//call the OOPGraphics about method to display version information.
-}
+	public Main()
+	{
+		JFrame MainFrame = new JFrame();		//create a frame to display the turtle panel on
+		MainFrame.setLayout(new FlowLayout());	//not strictly necessary
+		MainFrame.add(this);					//"this" is this object that extends turtle graphics so we are adding a turtle graphics panel to the frame
+		MainFrame.pack();						//set the frame to a size we can see
+		MainFrame.setVisible(true);				//now display it
+		about();								//call the OOPGraphics about method to display version information.
+	}
 
 
-public void processCommand(String command)	//this method must be provided because OOPGraphics will call it when it's JTextField is used
-{
-//String parameter is the text typed into the OOPGraphics JTextfield
-//lands here if return was pressed or "ok" JButton clicked
-//TO DO
-}
+	public void processCommand(String command)	//this method must be provided because OOPGraphics will call it when it's JTextField is used
+	{
+	//String parameter is the text typed into the OOPGraphics JTextfield
+	//lands here if return was pressed or "ok" JButton clicked
+	
+	//TO DO
+	}
 }
 
 </pre>
@@ -105,7 +105,7 @@ public abstract class OOPGraphics extends JPanel implements ActionListener, Comm
 	/**
 	 * public version number.
 	 */
-	public final float VERSION = 5.0f;
+	public final float VERSION = 5.1f;
 	private  Color background_Col = Color.BLACK;	//background colour of the panel
 	private final static int TURTLE_X_SIZE = 72, TURTLE_Y_SIZE = 69;
 	private final int TURTLESTARTX = 800, TURTLESTARTY = 400;
@@ -1154,6 +1154,7 @@ public abstract class OOPGraphics extends JPanel implements ActionListener, Comm
 	
 	/**
 	 * Cycle the full colour palette
+	 * Only works with palette images
 	 */
 	public void cycleColours()
 	{
