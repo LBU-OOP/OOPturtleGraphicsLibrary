@@ -49,7 +49,7 @@ import javax.swing.JTextField;
  * <p>select OOPGraphics.jar.</p>
  * <p>Click on the OK button</p>
  *
- *
+ * <h2>Version History</h2>
  * <p>All software has bugs, if you find one please report to author. Ensure you have the latest version.</p>
  * <p>V5.1 changed about() graphics, minor tidy up.</p>
  * <p>V5.0 renamed to OOPGraphics</p>
