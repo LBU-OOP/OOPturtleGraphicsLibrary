@@ -77,6 +77,7 @@ public class Main extends OOPGraphics
 	public Main()
 	{
 		JFrame MainFrame = new JFrame();		//create a frame to display the turtle panel on
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //Make sure the app exits when closed
 		MainFrame.setLayout(new FlowLayout());	//not strictly necessary
 		MainFrame.add(this);					//"this" is this object that extends turtle graphics so we are adding a turtle graphics panel to the frame
 		MainFrame.pack();						//set the frame to a size we can see
@@ -1196,7 +1197,7 @@ public abstract class OOPGraphics extends JPanel implements ActionListener, Comm
 	
 	public OOPGraphics()
 	{
-	
+
 		image = new BufferedImage(panelWidth, panelHeight, BufferedImage.TYPE_INT_RGB);//image = new BufferedImage(panelWidth, panelHeight, BufferedImage.TYPE_BYTE_INDEXED, colourModel);
 		raster = image.getRaster();
 		
