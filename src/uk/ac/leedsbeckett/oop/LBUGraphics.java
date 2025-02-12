@@ -656,6 +656,10 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 		forward(amt);
 	}
 
+	/**
+	 * Make the turtle "dance", go on try it.
+	 * @param moves number of dance moves to perform.
+	 */
 	public void dance(int moves)
 	{
 		boolean penState = getPenState();
