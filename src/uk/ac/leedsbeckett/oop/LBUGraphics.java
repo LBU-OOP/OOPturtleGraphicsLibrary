@@ -125,7 +125,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	private JLabel messages = null;
 	private JButton okBut = null;
 	/**
-	 * The underlying image used for drawing. This is required so any previous drawing activity is persistent on the panel.
+	 * The underlying image used for drawing by the turtle or native methods. This is required so any previous drawing activity is persistent on the panel.
 	 * image is the drawing area and turtleImage is for the graphical representation of the turtle/pen
 	 */
 	private BufferedImage image, turtleDisplay, turtle0;
