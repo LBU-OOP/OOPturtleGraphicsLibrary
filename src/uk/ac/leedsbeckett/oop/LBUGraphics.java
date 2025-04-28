@@ -32,13 +32,13 @@ import javax.swing.JTextField;
  * <h2>Adding the Jar File Eclipse</h2>
  * <p>The jar file should be added to your build path. You must have created a project and be in the package explorer view if you don't see it (Window->Show View->Package Explorer)</p>
  * <p>Right-click on your project, select "Build Path-Add External Archive" and add jar file.</p>
- * <p>It will appear in your project explorer under "referenced libraries", inside the jar will be LBUGraphics.class.</p>
+ * <p>It will appear in your project explorer under "referenced libraries", inside the jar will be OOPGraphics.class.</p>
  * <p>Don't forget to look at the inherited methods from JPanel and above, which will also be if use.</p>
  *
  * <h2>Updating the Jar File Eclipse</h2>
- * <p>If you need to update the jar file then remove the old one by expending Referenced Libraries in your project so that LBUGraphics.jar appears.</p>
- * <p>Right click on LBUGraphics.jar and select Build path->Remove From Build Path.</p>
- * <p>You will get syntax errors in your project where it references LBUGraphics, but you can now add the new version of LBUGraphics.jar using the steps above.</p>
+ * <p>If you need to update the jar file then remove the old one by expending Referenced Libraries in your project so that OOPGraphics.jar appears.</p>
+ * <p>Right click on OOPGraphics.jar and select Build path->Remove From Build Path.</p>
+ * <p>You will get syntax errors in your project where it references OOPGraphics, but you can now add the new version of OOPGraphics.jar using the steps above.</p>
  *
  * <h2>Adding the Jar File IntelliJ</h2>
  * <a href="https://www.geeksforgeeks.org/how-to-add-external-jar-file-to-an-intellij-idea-project/">...</a>
@@ -46,12 +46,13 @@ import javax.swing.JTextField;
  * <p>Go to the File > Project Structure</p>
  * <p>Select Modules at the left panel and select the Dependencies tab.</p>
  * <p>Select the + icon and select 1 JARs or Directories option.</p>
- * <p>select LBUGraphics.jar.</p>
+ * <p>select OOPGraphics.jar.</p>
  * <p>Click on the OK button</p>
  *
  * <h2>Version History</h2>
  * <p>All software has bugs, if you find one please report to author. Ensure you have the latest version.</p>
- * <p>V6.0 renamed to LBUGraphics.</p>
+ * <p>V6.1 Added second constructor which accepts panel size.</p>
+ * <p>V6.0 renamed to LBUGraphics. This version is fine for 2025 assignment if you don't want to change panel size.</p>
  * <p>V5.1 changed about() graphics, minor tidy up.</p>
  * <p>V5.0 renamed to OOPGraphics</p>
  * <p>V4.5 setPanelSize(int, int) now revalidates the display so its effect is immediately seen.</p>
@@ -107,7 +108,10 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	/**
 	 * public version number.
 	 */
-	public final float VERSION = 6f;
+	public final float VERSION = 6.1f;
+	/**
+	 * Colour of Panel.
+	 */
 	private  Color background_Col = Color.BLACK;	//background colour of the panel
 	private final static int TURTLE_X_SIZE = 72, TURTLE_Y_SIZE = 69;
 	private final int TURTLESTARTX = 800, TURTLESTARTY = 400;
@@ -117,7 +121,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	private BasicStroke Stroke = new BasicStroke( StrokeWidth );
 	
 	
-	private final JTextField commandLine;
+	private JTextField commandLine;
 	private JLabel messages = null;
 	private JButton okBut = null;
 	/**
@@ -152,7 +156,13 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	 * Colour of the pen the turtle draws with (A Java Color)
 	 */
 	protected int Colour = 15; //indexed pallette colour to draw in
+	/**
+	 * Colour turtle is drawing in.
+	 */
 	protected Color PenColour = Color.RED;
+	/**
+	 * Thickness of the line the turtle draws.
+	 */
 	protected int penSize = 1; //used for raw drawing
 	
 	/**
@@ -179,6 +189,9 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	 * delay for turtle animation
 	 */
 	private int sleepPeriod=6; //delay for turtle animation thread
+	/**
+	 * The speed the turtle moves.
+	 */
 	protected int turtleSpeed = 1; //speed for turtle animation
 
 	/**
@@ -657,8 +670,8 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	}
 
 	/**
-	 * Make the turtle "dance", go on try it.
-	 * @param moves number of dance moves to perform.
+	 * makes the turtle do a little dance
+	 * @param moves number of moves
 	 */
 	public void dance(int moves)
 	{
@@ -1184,7 +1197,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 		if (drawOn) drawLine(PenColour, x, y, x + penSize, y + penSize);
 
 	}
-	
+
 	/**
 	 * Cycle the full colour palette
 	 * Only works with palette images
@@ -1255,60 +1268,84 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	}
 	/**
 	 * Constructor.
-	 * Create a panel with pen set to the middle and turtle pointing down the screen
+	 * Create a panel of a standard size with pen set to the middle and turtle pointing down the screen
 	 * The pen is up.
 	 *
 	 */
 	
 	public LBUGraphics()
 	{
+		setLBUGraphics(this.panelWidth, this.panelHeight);
 
+	}
+
+	/**
+	 * Constructor.
+	 * 	  Create a panel of a standard size with pen set to the middle and turtle pointing down the screen
+	 * 	  The pen is up.
+	 *
+	 * @param width of JPanel
+	 * @param height of JPanel
+	 */
+	public LBUGraphics(int width, int height)
+	{
+		setLBUGraphics(width, height);
+
+	}
+
+	/**
+	 * Setter for LBUGraphics, called by consturutors
+	 * @param width of JPanel
+	 * @param height of JPanel
+	 */
+	public void setLBUGraphics(int width, int height)
+	{
+		this.panelWidth = width;
+		this.panelHeight = height;
 		image = new BufferedImage(panelWidth, panelHeight, BufferedImage.TYPE_INT_RGB);//image = new BufferedImage(panelWidth, panelHeight, BufferedImage.TYPE_BYTE_INDEXED, colourModel);
 		raster = image.getRaster();
-		
-		
+
+
 		//set default turtle state
-				xPos = panelWidth/2;
-				yPos = panelHeight/2;
-				drawOn = false;
-				direction = 90; //right
+		xPos = panelWidth/2;
+		yPos = panelHeight/2;
+		drawOn = false;
+		direction = 90; //right
 
-				setPreferredSize(new Dimension(panelWidth, panelHeight));
-				setLayout(new FlowLayout());
-							
-				commandLine = new JTextField(25);
-				
-				
-				add(commandLine);
-				commandLine.setVisible(true);
-				commandLine.addActionListener(this);
-				okBut = new JButton("ok");
-				add(okBut);
-				okBut.setVisible(true);
-				okBut.addActionListener(this);
-				messages = new JLabel("LBUGraphics V"+VERSION);
-				messages.setBackground(Color.white);
-				messages.setForeground(Color.red);
-				
-				add(messages);
-				messages.setVisible(true);
-				//main drawing area
-				
-				//small image to display on top of drawing area to represent the turtle
+		setPreferredSize(new Dimension(panelWidth, panelHeight));
+		setLayout(new FlowLayout());
 
-				setInternalTurtle(0);
-				// Set max size of the panel, so that is matches the max size of the image.
-				setMaximumSize(new Dimension(image.getWidth(), image.getHeight()));
-				setSize(panelWidth, panelHeight);
-				setVisible(true);
-				revalidate();
-				clear();
-				setTurtleSpeed(3);
-				repaint();
-			
+		commandLine = new JTextField(25);
+
+
+		add(commandLine);
+		commandLine.setVisible(true);
+		commandLine.addActionListener(this);
+		okBut = new JButton("ok");
+		add(okBut);
+		okBut.setVisible(true);
+		okBut.addActionListener(this);
+		messages = new JLabel("LBUGraphics V"+VERSION);
+		messages.setBackground(Color.white);
+		messages.setForeground(Color.red);
+
+		add(messages);
+		messages.setVisible(true);
+		//main drawing area
+
+		//small image to display on top of drawing area to represent the turtle
+
+		setInternalTurtle(0);
+		// Set max size of the panel, so that is matches the max size of the image.
+		setMaximumSize(new Dimension(image.getWidth(), image.getHeight()));
+		setSize(panelWidth, panelHeight);
+		setVisible(true);
+		revalidate();
+		clear();
+		setTurtleSpeed(3);
+		repaint();
+
 	}
-	
-	
 	/**
 	 * implemented abstract method from ActionListener interface.
 	 * Reads text from commandLine JTextField and calls abstract method processCommand()
