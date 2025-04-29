@@ -48,7 +48,7 @@ import javax.swing.JTextField;
  * <p>Select the + icon and select 1 JARs or Directories option.</p>
  * <p>select OOPGraphics.jar.</p>
  * <p>Click on the OK button</p>
- *
+ * <p>Note: It is advised to put the downloaded jar in your project directory and not leave it in a download directory. It has been known for other programs, such as virus checkers, to move, disable, or delete files in the download directory.</p>
  * <h2>Version History</h2>
  * <p>All software has bugs, if you find one please report to author. Ensure you have the latest version.</p>
  * <p>V6.1 Added second constructor which accepts panel size.</p>
