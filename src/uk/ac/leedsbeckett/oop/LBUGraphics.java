@@ -3,6 +3,8 @@ package uk.ac.leedsbeckett.oop;
 //to build gar file in IntelliJ click project then menu-Build-BuildArtefacts
 //to build javaDoc menu-tools-generate JavaDoc
 import java.awt.BasicStroke;
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.util.ArrayList;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -51,6 +53,7 @@ import javax.swing.JTextField;
  * <p>Note: It is advised to put the downloaded jar in your project directory and not leave it in a download directory. It has been known for other programs, such as virus checkers, to move, disable, or delete files in the download directory.</p>
  * <h2>Version History</h2>
  * <p>All software has bugs, if you find one please report to author. Ensure you have the latest version.</p>
+ * <p>v7.0 PlotterDevice</p>
  * <p>V6.1 Added second constructor which accepts panel size.</p>
  * <p>V6.0 renamed to LBUGraphics. This version is fine for 2025 assignment if you don't want to change panel size.</p>
  * <p>V5.1 changed about() graphics, minor tidy up.</p>
@@ -108,7 +111,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	/**
 	 * public version number.
 	 */
-	public final float VERSION = 6.1f;
+	public final float VERSION = 7.0f;
 	/**
 	 * Colour of Panel.
 	 */
@@ -204,7 +207,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	
 	
 	//takes a string, splits it and tries to convert it into integers
-	//if it can't it throws a numberformatexception
+	//if it can't, it throws a numberformatexception
 	private int[] getParameters(String args) 
 	{
 		String[] split = args.split(" ");
@@ -222,9 +225,44 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 		}
 		return params;
 	}
-	
-	
-		
+
+	/**
+	 * Reads a file of commands and returns a String with all the commands seperated by a newline.
+	 * @param filename or path and filename to be processed
+	 * @return String of commands seperated a by newline character
+	 * @throws IOException if file cannot be found or opened
+	 */
+
+	public String readFile(String filename) throws IOException
+	{
+		File file = new File(filename);
+		FileReader fileReader = new FileReader(file);
+		BufferedReader br = new BufferedReader(fileReader);
+		StringBuilder buffer = new StringBuilder();
+		String line;
+		while((line = br.readLine())!=null)
+		{
+			buffer.append(line);
+			buffer.append("\n");
+		}
+		return String.valueOf(buffer);
+	}
+
+	/**
+	 * Reads a file of commands and returns a String with all the commands seperated by a newline.
+	 * Does not throw exceptions on file errors
+	 * @param filename or path and filename to be processed
+	 * @return String of commands seperated a by newline character or an empty string if there was a file error.
+	 */
+	public String simpleReadFile(String filename)
+	{
+
+        try {
+            return(readFile(filename));
+        } catch (IOException e) {
+            return "";
+        }
+    }
 	/**
 	 * returns the graphicsContext of the Turtle display so you can draw on it using the normal Java drawing methods
 	 * example
@@ -414,40 +452,40 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 				savepenstroke = (int) getStroke();
 				boolean savePenState = getPenState();
 				//move turtle to start position
-				drawOff();
+				penUp();
 				pointTurtle(270);
 				bresenham(xPos,yPos,aboutX,aboutY);
-				left();
-				drawOn();
+				rotateLeft();
+				penDown();
 				setStroke(10);
 				setPenColour(Color.blue);//Colour = 12;
 				circle(50);
-				drawOff();
-				left(90);
+				penUp();
+				rotateLeft(90);
 				forward(100);
-				drawOn();
+				penDown();
 				setPenColour(Color.green);//Colour = 9;
 				circle(50);
-				
-				drawOff();
+
+				penUp();
 				forward(65);
 				///drawOff();
 				setPenColour(Color.red);//Colour = 2;
-				left(90);
+				rotateLeft(90);
 				forward(50);
-				drawOn();
-				right(180);
+				penDown();
+				rotateRight(180);
 				forward(100);
-				left(180);
-				drawOff();
+				rotateLeft(180);
+				penUp();
 				forward(75);
-				right(90);
+				rotateRight(90);
 				forward(25);
-				drawOn();
+				penDown();
 				circle(25);
-				drawOff();
+				penUp();
 				forward(100);
-				right(360);
+				rotateRight(360);
 				
 				PenColour = Color.GREEN;
 				g.setColor(Color.gray);
@@ -509,7 +547,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	/**
 	 * puts pen down so a line will be drawn when the turtle is moved
 	 */
-	public void drawOn()
+	public void penDown()
 	{
 		drawOn = true;
 	}
@@ -517,7 +555,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	/**
 	 * puts pen up so a line will not be drawn when turtle is moved
 	 */
-		public void drawOff()
+		public void penUp()
 	{
 		drawOn = false;
 	}
@@ -527,10 +565,10 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 		 * @param amount is a String representation of the degrees to rotate
 		 * if param cannot be converted to an integer a NumberFormatException is thrown.
 		 */
-		public void right(String amount)
+		public void rotateRight(String amount)
 		{
 			int degrees = getParameters(amount)[0];
-			right(degrees);
+			rotateRight(degrees);
 		}
 
 		
@@ -538,9 +576,9 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	 * turtle is rotated 90 degrees to the right. i.e. if it is facing upwards (north) before it will facing right (east) after  	
 	 * 
 	 */
-	public void right()
+	public void rotateRight()
 	{
-		right(90);
+		rotateRight(90);
 	}
 	
 	/**
@@ -548,7 +586,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	 * The turtle will wrap around if it goes beyond 360
 	 * @param amount is an integer 
 	 */
-	public void right(int amount)
+	public void rotateRight(int amount)
 	{
 		amount = amount%360;
 		final int a = amount;
@@ -584,10 +622,10 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	 * @param amount is a String representation of the degrees to rotate
 	 * if param cannot be converted to an integer a NumberFormatException is thrown.
 	 */
-	public void left(String amount)
+	public void rotateLeft(String amount)
 	{
 		int degrees = getParameters(amount)[0];
-		left(degrees);
+		rotateLeft(degrees);
 	}
 	
 
@@ -596,9 +634,9 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	 * turtle is rotated 90 degrees to the left. i.e. if it is facing upwards (north) before it will facing left (west) after  	
 	 * 
 	 */
-	public void left()
+	public void rotateLeft()
 	{
-		left(90);
+		rotateLeft(90);
 	}
 	
 	/**
@@ -606,7 +644,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	 * The turtle will wrap around if it goes beyond 360
 	 * @param amount is an integer
 	 */
-	public void left(int amount)
+	public void rotateLeft(int amount)
 	{
 		amount = amount%360;
 		final int a = amount;
@@ -653,10 +691,10 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 		if (rot<0)
 		{
 			rot*=-1;	//make positive
-			left(rot);
+			rotateLeft(rot);
 		}
 		else
-			right(rot);
+			rotateRight(rot);
 	}
 	/**
 	 * turtle is moved in the direction it is pointing by given number of pixels.
@@ -676,17 +714,17 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	public void dance(int moves)
 	{
 		boolean penState = getPenState();
-		drawOff();
+		penUp();
 		boolean flag = false;
 		for(int i =0; i<moves; i++)
 		{
 			if(flag)
 			{
-				right(180);
+				rotateRight(180);
 
 			}
 			else
-				left(180);
+				rotateLeft(180);
 			forward(50);
 			flag = !flag;
 
@@ -773,7 +811,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 
 		//move turtle to outer edge of circle
 		pointTurtle(0);
-		drawOff();
+		penUp();
 		forward(radius);
 		drawOn = savedrawOn;
 		xPos = savex;
@@ -781,7 +819,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 		drawCircle(radius, xPos, yPos);  
 		//move turtle back
 		pointTurtle(180);
-		drawOff();
+		penUp();
 		forward(radius);
 		drawOn = savedrawOn;
 		direction = saveDirection;
@@ -866,7 +904,7 @@ public abstract class LBUGraphics extends JPanel implements ActionListener, Comm
 	 */
 	public void reset()
 	{
-		drawOff();
+		penUp();
 		bresenham(xPos, yPos, TURTLESTARTX/2, TURTLESTARTY/2);
 		setPenState(false);
 		pointTurtle(180);

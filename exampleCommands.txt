@@ -1,0 +1,9 @@
+penDown
+rotateRight 90
+forward 100
+rotateRight 90
+forward 100
+rotateRight 90
+forward 100
+rotateRight 90
+forward 100
